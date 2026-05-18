@@ -1,21 +1,10 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'fs';
-import { join } from 'path';
-
-export interface AppEntry {
-  name: string;
-  url: string;
-  browser: string;
-  iconPath: string;
-  shortcutPath: string;
-  createdAt: string;
-}
+import { AppEntry } from '../domain/types';
+import { REGISTRY_DIR, REGISTRY_FILE } from '../config/paths';
 
 interface RegistryData {
   apps: AppEntry[];
 }
-
-const REGISTRY_DIR = join(process.env.APPDATA || '', 'WApp');
-const REGISTRY_FILE = join(REGISTRY_DIR, 'registry.json');
 
 export class AppRegistry {
   /**
