@@ -18,8 +18,8 @@ export async function createShortcut(options: ShortcutOptions): Promise<string> 
   const shortcutName = sanitizeFileName(options.name);
   const shortcutPath = join(startMenuPath, `${shortcutName}.lnk`);
 
-  // Build the target command: browser --new-window --window-name="<name>" <url>
-  const targetArgs = `${getAppArgForBrowser(options.browserPath, options.name)}${options.url}`;
+  // Build the target command: browser --app=<url>
+  const targetArgs = `${getAppArgForBrowser(options.browserPath)}${options.url}`;
 
   // Create PowerShell script to generate the shortcut
   const psScript = buildPowerShellScript({
@@ -88,11 +88,13 @@ function buildPowerShellScript(options: {
 
 /**
  * Determines the app argument prefix based on browser path.
- * Uses --new-window --window-name to fix the window title.
  */
-function getAppArgForBrowser(browserPath: string, appName: string): string {
-  const escapedName = appName.replace(/"/g, '\\"');
-  return `--new-window --window-name="${escapedName}" `;
+function getAppArgForBrowser(browserPath: string): string {
+  const browser = browserPath.toLowerCase();
+  if (browser.includes('brave')) return '--app=';
+  if (browser.includes('chrome')) return '--app=';
+  if (browser.includes('msedge') || browser.includes('edge')) return '--app=';
+  return '--app='; // Default
 }
 
 /**
