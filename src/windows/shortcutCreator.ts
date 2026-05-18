@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { getAppArg } from '../services/browserResolver';
+import { sanitizeFileName } from '../utils/sanitize';
 
 export interface ShortcutOptions {
   name: string;
@@ -97,9 +97,4 @@ function getAppArgForBrowser(browserPath: string): string {
   return '--app='; // Default
 }
 
-/**
- * Sanitizes a filename for safe use on Windows.
- */
-function sanitizeFileName(name: string): string {
-  return name.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').substring(0, 100);
-}
+

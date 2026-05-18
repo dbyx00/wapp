@@ -5,6 +5,7 @@ import {
 } from 'fs';
 
 import { join } from 'path';
+import { sanitizeFileName } from '../utils/sanitize';
 
 const ICONS_DIR = join(
   process.env.APPDATA || '',
@@ -350,9 +351,3 @@ function ensureIconsDir(): void {
   }
 }
 
-function sanitizeFileName(name: string): string {
-  return name
-    .replace(/[<>:"/\\|?*\x00-\x1F]/g, '_')
-    .trim()
-    .substring(0, 100);
-}
