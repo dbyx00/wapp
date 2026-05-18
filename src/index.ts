@@ -7,4 +7,5 @@ export { resolveMetadata } from './services/metadataResolver';
 export { validateUrl } from './utils/url';
 export { createShortcut } from './windows/shortcutCreator';
 export { sanitizeFileName } from './utils/sanitize';
+export { IAppRegistry } from './domain/appRegistry';
 export { AppEntry, BrowserName, CreateAppOptions, ShortcutOptions } from './domain/types';
