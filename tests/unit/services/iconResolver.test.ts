@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { resolveIcon } from './iconResolver';
+import { resolveIcon } from '../../src/services/iconResolver';
 
 // Mock fs module
 vi.mock('fs', () => ({

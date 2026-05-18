@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createShortcut } from './shortcutCreator';
+import { createShortcut } from '../../src/windows/shortcutCreator';
 
 // Mock child_process
 vi.mock('child_process', () => ({

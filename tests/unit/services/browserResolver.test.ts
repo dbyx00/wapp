@@ -6,7 +6,7 @@ vi.mock('fs', () => ({
 }));
 
 // Import after mock
-import { resolveBrowserPath, getAppArg, BrowserName } from './browserResolver';
+import { resolveBrowserPath, getAppArg, BrowserName } from '../../src/services/browserResolver';
 import { existsSync } from 'fs';
 const mockExistsSync = vi.mocked(existsSync);
 
