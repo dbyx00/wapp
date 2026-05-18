@@ -1,3 +1,5 @@
+import type { IAppRegistry } from './appRegistry';
+
 export type BrowserName = 'brave' | 'chrome' | 'edge';
 
 export interface AppEntry {
@@ -13,6 +15,7 @@ export interface CreateAppOptions {
   url: string;
   name?: string;
   browser?: BrowserName;
+  registry: IAppRegistry;
 }
 
 export interface ShortcutOptions {

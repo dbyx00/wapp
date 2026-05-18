@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createApp } from '../../../src/core/createApp';
+import { IAppRegistry } from '../../../src/domain/appRegistry';
 
 // Mock all dependencies
 vi.mock('../../../src/services/browserResolver', () => ({
@@ -22,16 +23,6 @@ vi.mock('../../../src/utils/url', () => ({
   validateUrl: vi.fn(),
 }));
 
-// Mock AppRegistry with constructor function
-const mockAppRegistryAdd = vi.fn();
-
-vi.mock('../../../src/services/appRegistry', () => {
-  const MockAppRegistry = function(this: any) {
-    this.add = mockAppRegistryAdd;
-  };
-  return { AppRegistry: MockAppRegistry };
-});
-
 import { resolveBrowserPath } from '../../../src/services/browserResolver';
 import { resolveMetadata } from '../../../src/services/metadataResolver';
 import { resolveIcon } from '../../../src/services/iconResolver';
@@ -43,6 +34,18 @@ const mockResolveBrowserPath = vi.mocked(resolveBrowserPath);
 const mockResolveMetadata = vi.mocked(resolveMetadata);
 const mockResolveIcon = vi.mocked(resolveIcon);
 const mockCreateShortcut = vi.mocked(createShortcut);
+
+function createMockRegistry(): IAppRegistry {
+  return {
+    add: vi.fn(),
+    list: vi.fn().mockReturnValue([]),
+    findByName: vi.fn(),
+    remove: vi.fn(),
+    search: vi.fn().mockReturnValue([]),
+    getByIndex: vi.fn(),
+    removeByQuery: vi.fn(),
+  };
+}
 
 describe('createApp integration', () => {
   beforeEach(() => {
@@ -61,14 +64,16 @@ describe('createApp integration', () => {
     mockResolveMetadata.mockResolvedValue('Example Site');
     mockResolveIcon.mockResolvedValue('C:\\icons\\Example.ico');
     mockCreateShortcut.mockResolvedValue('C:\\StartMenu\\Example.lnk');
+    const registry = createMockRegistry();
 
     await createApp({
       url: 'https://example.com',
       name: 'Example Site',
       browser: 'brave',
+      registry,
     });
 
-    expect(mockAppRegistryAdd).toHaveBeenCalledWith({
+    expect(registry.add).toHaveBeenCalledWith({
       name: 'Example Site',
       url: 'https://example.com/',
       browser: 'brave',
@@ -83,13 +88,15 @@ describe('createApp integration', () => {
     mockResolveMetadata.mockResolvedValue('Example Site');
     mockResolveIcon.mockResolvedValue('C:\\icons\\Example.ico');
     mockCreateShortcut.mockRejectedValue(new Error('Shortcut creation failed'));
+    const registry = createMockRegistry();
 
     await expect(createApp({
       url: 'https://example.com',
       name: 'Example Site',
       browser: 'brave',
+      registry,
     })).rejects.toThrow('Shortcut creation failed');
 
-    expect(mockAppRegistryAdd).not.toHaveBeenCalled();
+    expect(registry.add).not.toHaveBeenCalled();
   });
 });
