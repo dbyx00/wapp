@@ -37,12 +37,12 @@ Chain strategy: pending
 
 ## Phase 2: Config & Types
 
-- [ ] **P2-1** Create `src/domain/types.ts` with `AppEntry`, `BrowserName`, `CreateAppOptions`, `ShortcutOptions`. Files: create 1. Test: `npm test`. Deps: P1-7.
-- [ ] **P2-2** Create `src/config/paths.ts` and `src/config/browsers.ts` (imports `BrowserName` from domain). Files: create 2. Test: `npm test`. Deps: P2-1.
-- [ ] **P2-3** Update `browserResolver.ts`: import `BrowserName` from domain, `BROWSER_CONFIGS` from config; remove `getAppArg` export. Files: modify 1. Test: `npm test`. Deps: P2-2.
-- [ ] **P2-4** Update `appRegistry.ts` to import `AppEntry` from domain and paths from config. Files: modify 1. Test: `npm test`. Deps: P2-2.
-- [ ] **P2-5** Update `iconResolver.ts` to import `ICONS_DIR` from config; update `createApp.ts` to import types from domain. Files: modify 2. Test: `npm test`. Deps: P2-2, P2-4.
-- [ ] **P2-6** Update all test files importing `AppEntry` or `BrowserName` to use `domain/types`. Files: modify ~8. Test: `npm test`. Deps: P2-3, P2-4, P2-5.
+- [x] **P2-1** Create `src/domain/types.ts` with `AppEntry`, `BrowserName`, `CreateAppOptions`, `ShortcutOptions`. Files: create 1. Test: `npm test`. Deps: P1-7.
+- [x] **P2-2** Create `src/config/paths.ts` and `src/config/browsers.ts` (imports `BrowserName` from domain). Files: create 2. Test: `npm test`. Deps: P2-1.
+- [x] **P2-3** Update `browserResolver.ts`: import `BrowserName` from domain, `BROWSER_CONFIGS` from config; remove `getAppArg` export. Files: modify 1. Test: `npm test`. Deps: P2-2.
+- [x] **P2-4** Update `appRegistry.ts` to import `AppEntry` from domain and paths from config. Files: modify 1. Test: `npm test`. Deps: P2-2.
+- [x] **P2-5** Update `iconResolver.ts` to import `ICONS_DIR` from config; update `createApp.ts` to import types from domain. Files: modify 2. Test: `npm test`. Deps: P2-2, P2-4.
+- [x] **P2-6** Update all test files importing `AppEntry` or `BrowserName` to use `domain/types`. Files: modify ~8. Test: `npm test`. Deps: P2-3, P2-4, P2-5.
 
 ## Phase 3: Services
 
