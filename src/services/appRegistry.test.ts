@@ -313,4 +313,124 @@ describe('appRegistry', () => {
       expect(() => registry.remove('Any')).toThrow('App "Any" not found');
     });
   });
+
+  describe('search', () => {
+    it('returns exact match by name', () => {
+      const mockApps = [
+        { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+      const results = registry.search('ChatGPT');
+
+      expect(results).toHaveLength(1);
+      expect(results[0].name).toBe('ChatGPT');
+    });
+
+    it('returns partial matches case-insensitive', () => {
+      const mockApps = [
+        { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'Stack Overflow', url: 'https://stackoverflow.com', browser: 'edge', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+      const results = registry.search('chat');
+
+      expect(results).toHaveLength(1);
+      expect(results[0].name).toBe('ChatGPT');
+    });
+
+    it('returns multiple matches when query matches several apps', () => {
+      const mockApps = [
+        { name: 'Example Site', url: 'https://example.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'Example App', url: 'https://example.org', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'My Example', url: 'https://myexample.com', browser: 'edge', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'GitHub', url: 'https://github.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+      const results = registry.search('example');
+
+      expect(results).toHaveLength(3);
+      expect(results.map(r => r.name)).toContain('Example Site');
+      expect(results.map(r => r.name)).toContain('Example App');
+      expect(results.map(r => r.name)).toContain('My Example');
+    });
+
+    it('returns empty array when no matches', () => {
+      const mockApps = [
+        { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+      const results = registry.search('nonexistent');
+
+      expect(results).toHaveLength(0);
+    });
+
+    it('returns empty array when registry does not exist', () => {
+      mockExistsSync.mockReturnValue(false);
+
+      const registry = new AppRegistry();
+      const results = registry.search('anything');
+
+      expect(results).toHaveLength(0);
+    });
+  });
+
+  describe('getByIndex', () => {
+    it('returns app by 1-based index', () => {
+      const mockApps = [
+        { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
+        { name: 'Stack Overflow', url: 'https://stackoverflow.com', browser: 'edge', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+
+      expect(registry.getByIndex(1)?.name).toBe('ChatGPT');
+      expect(registry.getByIndex(2)?.name).toBe('GitHub');
+      expect(registry.getByIndex(3)?.name).toBe('Stack Overflow');
+    });
+
+    it('returns undefined for out of range index', () => {
+      const mockApps = [
+        { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
+      ];
+
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+
+      const registry = new AppRegistry();
+
+      expect(registry.getByIndex(0)).toBeUndefined();
+      expect(registry.getByIndex(2)).toBeUndefined();
+      expect(registry.getByIndex(99)).toBeUndefined();
+    });
+
+    it('returns undefined when registry does not exist', () => {
+      mockExistsSync.mockReturnValue(false);
+
+      const registry = new AppRegistry();
+      expect(registry.getByIndex(1)).toBeUndefined();
+    });
+  });
 });

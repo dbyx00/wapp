@@ -60,16 +60,17 @@ program
   });
 
 program
-  .command('remove <name>')
-  .description('Remove an installed WApp')
+  .command('remove <query>')
+  .description('Remove an installed WApp (by name, partial match, or list number)')
   .addHelpText('after', `
 Examples:
-  $ wapp remove "ChatGPT"
-  $ wapp remove GitHub`)
-  .action((name: string) => {
+  $ wapp remove "ChatGPT"      # Exact name
+  $ wapp remove chat           # Partial match
+  $ wapp remove 2              # By list number (see wapp list)`)
+  .action((query: string) => {
     try {
       const registry = new AppRegistry();
-      const app = registry.remove(name);
+      const app = registry.removeByQuery(query);
 
       console.log(`✓ App "${app.name}" removed`);
       console.log('✓ Shortcut deleted');
