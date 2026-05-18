@@ -16,6 +16,11 @@ program
   .description('Create a Windows app from a URL')
   .option('--name <name>', 'App name (overrides HTML title)')
   .option('--browser <browser>', 'Browser to use: brave, chrome, edge', 'brave')
+  .addHelpText('after', `
+Examples:
+  $ wapp create https://chatgpt.com
+  $ wapp create https://chatgpt.com --name "ChatGPT"
+  $ wapp create https://github.com --browser chrome`)
   .action(async (url: string, options: { name?: string; browser?: string }) => {
     try {
       await createApp({
@@ -57,6 +62,10 @@ program
 program
   .command('remove <name>')
   .description('Remove an installed WApp')
+  .addHelpText('after', `
+Examples:
+  $ wapp remove "ChatGPT"
+  $ wapp remove GitHub`)
   .action((name: string) => {
     try {
       const registry = new AppRegistry();
