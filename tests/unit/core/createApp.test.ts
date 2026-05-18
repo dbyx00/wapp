@@ -1,40 +1,40 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createApp } from '../../src/core/createApp';
+import { createApp } from '../../../src/core/createApp';
 
 // Mock all dependencies
-vi.mock('../../src/services/browserResolver', () => ({
+vi.mock('../../../src/services/browserResolver', () => ({
   resolveBrowserPath: vi.fn(),
   getAppArg: vi.fn(),
 }));
 
-vi.mock('../../src/services/metadataResolver', () => ({
+vi.mock('../../../src/services/metadataResolver', () => ({
   resolveMetadata: vi.fn(),
 }));
 
-vi.mock('../../src/services/iconResolver', () => ({
+vi.mock('../../../src/services/iconResolver', () => ({
   resolveIcon: vi.fn(),
 }));
 
-vi.mock('../../src/windows/shortcutCreator', () => ({
+vi.mock('../../../src/windows/shortcutCreator', () => ({
   createShortcut: vi.fn(),
 }));
 
-vi.mock('../../src/utils/url', () => ({
+vi.mock('../../../src/utils/url', () => ({
   validateUrl: vi.fn(),
 }));
 
-vi.mock('../../src/services/appRegistry', () => {
+vi.mock('../../../src/services/appRegistry', () => {
   const MockAppRegistry = function(this: any) {
     this.add = vi.fn();
   };
   return { AppRegistry: MockAppRegistry };
 });
 
-import { resolveBrowserPath } from '../../src/services/browserResolver';
-import { resolveMetadata } from '../../src/services/metadataResolver';
-import { resolveIcon } from '../../src/services/iconResolver';
-import { createShortcut } from '../../src/windows/shortcutCreator';
-import { validateUrl } from '../../src/utils/url';
+import { resolveBrowserPath } from '../../../src/services/browserResolver';
+import { resolveMetadata } from '../../../src/services/metadataResolver';
+import { resolveIcon } from '../../../src/services/iconResolver';
+import { createShortcut } from '../../../src/windows/shortcutCreator';
+import { validateUrl } from '../../../src/utils/url';
 
 const mockValidateUrl = vi.mocked(validateUrl);
 const mockResolveBrowserPath = vi.mocked(resolveBrowserPath);

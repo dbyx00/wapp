@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { AppRegistry, AppEntry } from '../../src/services/appRegistry';
+import { AppRegistry, AppEntry } from '../../../src/services/appRegistry';
 
 // Mock fs module
 vi.mock('fs', () => ({

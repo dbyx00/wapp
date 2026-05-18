@@ -10,7 +10,7 @@ vi.mock('fs', () => ({
 }));
 
 import { existsSync, readFileSync } from 'fs';
-import { AppRegistry, AppEntry } from '../../src/services/appRegistry';
+import { AppRegistry, AppEntry } from '../../../src/services/appRegistry';
 
 const mockExistsSync = vi.mocked(existsSync);
 const mockReadFileSync = vi.mocked(readFileSync);
