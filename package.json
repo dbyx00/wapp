@@ -10,7 +10,9 @@
     "build": "tsc",
     "start": "node dist/cli/wappCommand.js",
     "dev": "ts-node src/cli/wappCommand.ts",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "windows",
@@ -22,12 +24,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.1.0",
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "commander": "^12.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.6",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.0",
-    "ts-node": "^10.9.2"
+    "vitest": "^4.1.6"
   }
 }
