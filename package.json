@@ -1,0 +1,33 @@
+{
+  "name": "wapp",
+  "version": "0.1.0",
+  "description": "Windows Web App Installer - Convert URLs into installable Windows apps",
+  "main": "dist/index.js",
+  "bin": {
+    "wapp": "./dist/cli/wappCommand.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli/wappCommand.js",
+    "dev": "ts-node src/cli/wappCommand.ts",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "windows",
+    "cli",
+    "webapp",
+    "installer",
+    "shortcut"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "cheerio": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "ts-node": "^10.9.2"
+  }
+}
