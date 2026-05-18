@@ -31,9 +31,9 @@ describe('shortcutCreator', () => {
     expect(result).toContain('Example.lnk');
   });
 
-  it('includes --app= argument in shortcut', async () => {
+  it('uses --new-window --window-name instead of --app for fixed title', async () => {
     await createShortcut({
-      name: 'Test',
+      name: 'Mi App',
       url: 'https://test.com',
       browserPath: 'C:\\Brave\\brave.exe',
       iconPath: 'C:\\icons\\Test.ico',
@@ -44,7 +44,10 @@ describe('shortcutCreator', () => {
     );
 
     expect(psCall).toBeDefined();
-    expect(psCall![0]).toContain('--app=https://test.com');
+    expect(psCall![0]).toContain('--new-window');
+    expect(psCall![0]).toContain('--window-name="Mi App"');
+    expect(psCall![0]).toContain('https://test.com');
+    expect(psCall![0]).not.toContain('--app=');
   });
 
   it('uses correct icon path', async () => {
