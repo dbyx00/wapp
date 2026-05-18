@@ -3,13 +3,7 @@ import { resolveMetadata } from '../services/metadataResolver';
 import { resolveIcon } from '../services/iconResolver';
 import { createShortcut } from '../windows/shortcutCreator';
 import { validateUrl } from '../utils/url';
-import { AppRegistry } from '../services/appRegistry';
-
-export interface CreateAppOptions {
-  url: string;
-  name?: string;
-  browser?: 'brave' | 'chrome' | 'edge';
-}
+import { CreateAppOptions } from '../domain/types';
 
 export async function createApp(options: CreateAppOptions): Promise<void> {
   // Step 1: Validate URL
@@ -39,8 +33,7 @@ export async function createApp(options: CreateAppOptions): Promise<void> {
   console.log(`✓ Shortcut: ${shortcutPath}`);
 
   // Step 6: Register app in registry
-  const registry = new AppRegistry();
-  registry.add({
+  options.registry.add({
     name: appName,
     url: validatedUrl,
     browser,

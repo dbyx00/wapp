@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { resolveIcon } from './iconResolver';
+import { resolveIcon } from '../../../../src/services/iconResolver';
 
 // Mock fs module
 vi.mock('fs', () => ({
@@ -35,6 +35,7 @@ describe('iconResolver', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: { get: () => 'image/x-icon' },
         arrayBuffer: () => Promise.resolve(mockIconBuffer.buffer.slice(mockIconBuffer.byteOffset, mockIconBuffer.byteOffset + mockIconBuffer.byteLength)),
       });
 
@@ -48,7 +49,7 @@ describe('iconResolver', () => {
     expect(result).toContain('Example.ico');
   });
 
-  it('rejects PNG files saved as .ico (invalid magic bytes)', async () => {
+  it('saves PNG files as .png when detected', async () => {
     // PNG magic bytes: 89 50 4E 47
     const pngBuffer = Buffer.alloc(200);
     pngBuffer[0] = 0x89;
@@ -60,21 +61,20 @@ describe('iconResolver', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: { get: () => 'image/png' },
         arrayBuffer: () => Promise.resolve(pngBuffer.buffer.slice(pngBuffer.byteOffset, pngBuffer.byteOffset + pngBuffer.byteLength)),
-      })
-      .mockResolvedValueOnce({ ok: false, status: 404 }); // apple-touch-icon fails
+      });
 
     vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    await resolveIcon('https://example.com', 'Example');
+    const result = await resolveIcon('https://example.com', 'Example');
 
-    // Should have tried apple-touch-icon since favicon was PNG (invalid)
-    expect(global.fetch).toHaveBeenCalledTimes(2);
-    // Should have created default icon
-    expect(mockWriteFileSync).toHaveBeenCalled();
+    // Should have saved as PNG on first call
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(result).toContain('Example.png');
   });
 
-  it('falls back to apple-touch-icon.png when favicon.ico not found', async () => {
+  it('falls back to apple-touch-icon.png when earlier paths fail', async () => {
     // Valid ICO buffer
     const mockIconBuffer = Buffer.alloc(200);
     mockIconBuffer[0] = 0x00;
@@ -84,9 +84,11 @@ describe('iconResolver', () => {
 
     global.fetch = vi.fn()
       .mockResolvedValueOnce({ ok: false, status: 404 }) // favicon.ico fails
+      .mockResolvedValueOnce({ ok: false, status: 404 }) // favicon.png fails
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: { get: () => 'image/x-icon' },
         arrayBuffer: () => Promise.resolve(mockIconBuffer.buffer.slice(mockIconBuffer.byteOffset, mockIconBuffer.byteOffset + mockIconBuffer.byteLength)),
       });
 
@@ -95,17 +97,16 @@ describe('iconResolver', () => {
     const result = await resolveIcon('https://example.com', 'Example');
 
     expect(global.fetch).toHaveBeenNthCalledWith(
-      2,
+      3,
       'https://example.com/apple-touch-icon.png',
       expect.any(Object)
     );
     expect(mockWriteFileSync).toHaveBeenCalled();
+    expect(result).toContain('Example.ico');
   });
 
-  it('creates default icon when both favicon and apple-touch-icon fail', async () => {
-    global.fetch = vi.fn()
-      .mockResolvedValueOnce({ ok: false, status: 404 }) // favicon.ico fails
-      .mockResolvedValueOnce({ ok: false, status: 404 }); // apple-touch-icon fails
+  it('creates default icon when all quick paths fail', async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 404 });
 
     vi.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -140,23 +141,28 @@ describe('iconResolver', () => {
     expect(filename).toBe('My App_ Special.ico');
   });
 
-  it('rejects tiny responses as invalid icons', async () => {
-    // Too small to be valid ICO (less than 4 bytes for magic bytes check)
+  it('rejects tiny responses and tries remaining paths', async () => {
+    // Too small to be valid (less than 32 bytes)
     const tinyBuffer = Buffer.from([0x00, 0x00]);
 
     global.fetch = vi.fn()
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
+        headers: { get: () => 'image/x-icon' },
         arrayBuffer: () => Promise.resolve(tinyBuffer.buffer.slice(tinyBuffer.byteOffset, tinyBuffer.byteOffset + tinyBuffer.byteLength)),
       })
-      .mockResolvedValueOnce({ ok: false, status: 404 });
+      .mockResolvedValue({ ok: false, status: 404 });
 
     vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     await resolveIcon('https://example.com', 'Example');
 
-    // Should have tried apple-touch-icon since favicon was too small
-    expect(global.fetch).toHaveBeenCalledTimes(2);
+    // Should have tried multiple paths after favicon was too small
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://example.com/favicon.ico',
+      expect.any(Object)
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(5);
   });
 });

@@ -6,7 +6,8 @@ vi.mock('fs', () => ({
 }));
 
 // Import after mock
-import { resolveBrowserPath, getAppArg, BrowserName } from './browserResolver';
+import { resolveBrowserPath } from '../../../src/services/browserResolver';
+import { BrowserName } from '../../../src/domain/types';
 import { existsSync } from 'fs';
 const mockExistsSync = vi.mocked(existsSync);
 
@@ -70,17 +71,4 @@ describe('browserResolver', () => {
     });
   });
 
-  describe('getAppArg', () => {
-    it('returns --app= for brave', () => {
-      expect(getAppArg('brave')).toBe('--app=');
-    });
-
-    it('returns --app= for chrome', () => {
-      expect(getAppArg('chrome')).toBe('--app=');
-    });
-
-    it('returns --app= for edge', () => {
-      expect(getAppArg('edge')).toBe('--app=');
-    });
-  });
 });

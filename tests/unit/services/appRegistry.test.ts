@@ -1,22 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { AppRegistry, AppEntry } from './appRegistry';
+import { AppRegistry } from '../../../src/services/appRegistry';
+import { AppEntry } from '../../../src/domain/types';
 
-// Mock fs module
-vi.mock('fs', () => ({
-  existsSync: vi.fn(),
-  readFileSync: vi.fn(),
-  writeFileSync: vi.fn(),
-  mkdirSync: vi.fn(),
-  unlinkSync: vi.fn(),
+// Mock delegated modules
+vi.mock('../../../src/services/registryPersistence', () => ({
+  load: vi.fn(),
+  save: vi.fn(),
 }));
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from 'fs';
+vi.mock('../../../src/services/fileService', () => ({
+  deleteFile: vi.fn(),
+}));
 
-const mockExistsSync = vi.mocked(existsSync);
-const mockReadFileSync = vi.mocked(readFileSync);
-const mockWriteFileSync = vi.mocked(writeFileSync);
-const mockMkdirSync = vi.mocked(mkdirSync);
-const mockUnlinkSync = vi.mocked(unlinkSync);
+import { load, save } from '../../../src/services/registryPersistence';
+import { deleteFile } from '../../../src/services/fileService';
+
+const mockLoad = vi.mocked(load);
+const mockSave = vi.mocked(save);
+const mockDeleteFile = vi.mocked(deleteFile);
 
 describe('appRegistry', () => {
   beforeEach(() => {
@@ -26,7 +27,7 @@ describe('appRegistry', () => {
 
   describe('add', () => {
     it('creates new registry file when it does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       registry.add({
@@ -37,11 +38,7 @@ describe('appRegistry', () => {
         shortcutPath: 'C:\\StartMenu\\TestApp.lnk',
       });
 
-      expect(mockMkdirSync).toHaveBeenCalledWith(
-        expect.stringContaining('WApp'),
-        { recursive: true }
-      );
-      expect(mockWriteFileSync).toHaveBeenCalled();
+      expect(mockSave).toHaveBeenCalled();
     });
 
     it('appends to existing registry', () => {
@@ -58,8 +55,7 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       registry.add({
@@ -70,13 +66,13 @@ describe('appRegistry', () => {
         shortcutPath: 'C:\\StartMenu\\New.lnk',
       });
 
-      const savedData = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+      const savedData = mockSave.mock.calls[0][0] as { apps: AppEntry[] };
       expect(savedData.apps).toHaveLength(2);
       expect(savedData.apps[1].name).toBe('NewApp');
     });
 
     it('sets createdAt timestamp', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       const before = Date.now();
@@ -89,7 +85,7 @@ describe('appRegistry', () => {
       });
       const after = Date.now();
 
-      const savedData = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+      const savedData = mockSave.mock.calls[0][0] as { apps: AppEntry[] };
       const createdAt = new Date(savedData.apps[0].createdAt).getTime();
       expect(createdAt).toBeGreaterThanOrEqual(before - 1000);
       expect(createdAt).toBeLessThanOrEqual(after + 1000);
@@ -109,8 +105,7 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       expect(() =>
@@ -127,7 +122,7 @@ describe('appRegistry', () => {
 
   describe('list', () => {
     it('returns empty array when registry does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       const apps = registry.list();
@@ -157,8 +152,7 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       const apps = registry.list();
@@ -184,8 +178,7 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       const app = registry.findByName('ChatGPT');
@@ -196,8 +189,7 @@ describe('appRegistry', () => {
     });
 
     it('returns undefined when app not found', () => {
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: [] }));
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       const app = registry.findByName('NonExistent');
@@ -206,7 +198,7 @@ describe('appRegistry', () => {
     });
 
     it('returns undefined when registry does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       const app = registry.findByName('Any');
@@ -238,8 +230,7 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       const removed = registry.remove('ToRemove');
@@ -247,7 +238,7 @@ describe('appRegistry', () => {
       expect(removed).toBeDefined();
       expect(removed!.name).toBe('ToRemove');
 
-      const savedData = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+      const savedData = mockSave.mock.calls[0][0] as { apps: AppEntry[] };
       expect(savedData.apps).toHaveLength(1);
       expect(savedData.apps[0].name).toBe('Keep');
     });
@@ -266,13 +257,12 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       registry.remove('TestApp');
 
-      expect(mockUnlinkSync).toHaveBeenCalledWith('C:\\StartMenu\\Test.lnk');
+      expect(mockDeleteFile).toHaveBeenCalledWith('C:\\StartMenu\\Test.lnk');
     });
 
     it('deletes icon file', () => {
@@ -289,25 +279,23 @@ describe('appRegistry', () => {
         ],
       };
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify(existingRegistry));
+      mockLoad.mockReturnValue(existingRegistry);
 
       const registry = new AppRegistry();
       registry.remove('TestApp');
 
-      expect(mockUnlinkSync).toHaveBeenCalledWith('C:\\icons\\Test.ico');
+      expect(mockDeleteFile).toHaveBeenCalledWith('C:\\icons\\Test.ico');
     });
 
     it('throws error when app not found', () => {
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: [] }));
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       expect(() => registry.remove('NonExistent')).toThrow('App "NonExistent" not found');
     });
 
     it('throws error when registry does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       expect(() => registry.remove('Any')).toThrow('App "Any" not found');
@@ -321,8 +309,7 @@ describe('appRegistry', () => {
         { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
       const results = registry.search('ChatGPT');
@@ -338,8 +325,7 @@ describe('appRegistry', () => {
         { name: 'Stack Overflow', url: 'https://stackoverflow.com', browser: 'edge', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
       const results = registry.search('chat');
@@ -356,8 +342,7 @@ describe('appRegistry', () => {
         { name: 'GitHub', url: 'https://github.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
       const results = registry.search('example');
@@ -374,8 +359,7 @@ describe('appRegistry', () => {
         { name: 'GitHub', url: 'https://github.com', browser: 'chrome', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
       const results = registry.search('nonexistent');
@@ -384,7 +368,7 @@ describe('appRegistry', () => {
     });
 
     it('returns empty array when registry does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       const results = registry.search('anything');
@@ -401,8 +385,7 @@ describe('appRegistry', () => {
         { name: 'Stack Overflow', url: 'https://stackoverflow.com', browser: 'edge', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
 
@@ -416,8 +399,7 @@ describe('appRegistry', () => {
         { name: 'ChatGPT', url: 'https://chatgpt.com', browser: 'brave', iconPath: '', shortcutPath: '', createdAt: '' },
       ];
 
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue(JSON.stringify({ apps: mockApps }));
+      mockLoad.mockReturnValue({ apps: mockApps });
 
       const registry = new AppRegistry();
 
@@ -427,7 +409,7 @@ describe('appRegistry', () => {
     });
 
     it('returns undefined when registry does not exist', () => {
-      mockExistsSync.mockReturnValue(false);
+      mockLoad.mockReturnValue({ apps: [] });
 
       const registry = new AppRegistry();
       expect(registry.getByIndex(1)).toBeUndefined();

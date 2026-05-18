@@ -1,13 +1,7 @@
 import { execSync } from 'child_process';
 import { join } from 'path';
-import { getAppArg } from '../services/browserResolver';
-
-export interface ShortcutOptions {
-  name: string;
-  url: string;
-  browserPath: string;
-  iconPath: string;
-}
+import { sanitizeFileName } from '../utils/sanitize';
+import { ShortcutOptions } from '../domain/types';
 
 /**
  * Creates a Windows shortcut in the Start Menu Programs folder.
@@ -97,9 +91,4 @@ function getAppArgForBrowser(browserPath: string): string {
   return '--app='; // Default
 }
 
-/**
- * Sanitizes a filename for safe use on Windows.
- */
-function sanitizeFileName(name: string): string {
-  return name.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').substring(0, 100);
-}
+
