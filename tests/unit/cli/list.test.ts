@@ -9,9 +9,9 @@ function createMockRegistry(overrides?: Partial<IAppRegistry>): IAppRegistry {
     list: vi.fn().mockReturnValue([]),
     findByName: vi.fn(),
     remove: vi.fn(),
+    unregister: vi.fn(),
     search: vi.fn().mockReturnValue([]),
     getByIndex: vi.fn(),
-    removeByQuery: vi.fn(),
     ...overrides,
   };
 }

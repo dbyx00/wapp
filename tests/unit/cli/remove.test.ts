@@ -18,9 +18,9 @@ function createMockRegistry(overrides?: Partial<IAppRegistry>): IAppRegistry {
     list: vi.fn().mockReturnValue([]),
     findByName: vi.fn(),
     remove: vi.fn(),
+    unregister: vi.fn(),
     search: vi.fn().mockReturnValue([]),
     getByIndex: vi.fn(),
-    removeByQuery: vi.fn(),
     ...overrides,
   };
 }
@@ -35,9 +35,10 @@ describe('removeHandler', () => {
     vi.restoreAllMocks();
   });
 
-  it('prints success message when removal succeeds', () => {
+  it('prints success message when removal by exact name succeeds', () => {
     const registry = createMockRegistry({
-      removeByQuery: vi.fn().mockReturnValue(exampleApp),
+      findByName: vi.fn().mockReturnValue(exampleApp),
+      remove: vi.fn().mockReturnValue(exampleApp),
     });
 
     removeHandler('ChatGPT', registry);
@@ -47,25 +48,71 @@ describe('removeHandler', () => {
     expect(console.log).toHaveBeenCalledWith('✓ Icon deleted');
   });
 
-  it('calls removeByQuery with the query string', () => {
-    const removeByQueryMock = vi.fn().mockReturnValue(exampleApp);
-    const registry = createMockRegistry({ removeByQuery: removeByQueryMock });
+  it('calls remove with the matched app name', () => {
+    const removeMock = vi.fn().mockReturnValue(exampleApp);
+    const registry = createMockRegistry({
+      findByName: vi.fn().mockReturnValue(exampleApp),
+      remove: removeMock,
+    });
+
+    removeHandler('ChatGPT', registry);
+
+    expect(removeMock).toHaveBeenCalledWith('ChatGPT');
+  });
+
+  it('falls back to search when exact name not found', () => {
+    const searchMock = vi.fn().mockReturnValue([exampleApp]);
+    const removeMock = vi.fn().mockReturnValue(exampleApp);
+    const registry = createMockRegistry({
+      findByName: vi.fn().mockReturnValue(undefined),
+      search: searchMock,
+      remove: removeMock,
+    });
 
     removeHandler('chat', registry);
 
-    expect(removeByQueryMock).toHaveBeenCalledWith('chat');
+    expect(searchMock).toHaveBeenCalledWith('chat');
+    expect(removeMock).toHaveBeenCalledWith('ChatGPT');
+  });
+
+  it('removes by index when numeric query provided', () => {
+    const getByIndexMock = vi.fn().mockReturnValue(exampleApp);
+    const removeMock = vi.fn().mockReturnValue(exampleApp);
+    const registry = createMockRegistry({
+      getByIndex: getByIndexMock,
+      remove: removeMock,
+    });
+
+    removeHandler('1', registry);
+
+    expect(getByIndexMock).toHaveBeenCalledWith(1);
+    expect(removeMock).toHaveBeenCalledWith('ChatGPT');
   });
 
   it('prints error and exits when removal fails', () => {
     const registry = createMockRegistry({
-      removeByQuery: vi.fn().mockImplementation(() => {
-        throw new Error('No apps match "xyz"');
-      }),
+      findByName: vi.fn().mockReturnValue(undefined),
+      search: vi.fn().mockReturnValue([]),
     });
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => { throw new Error('exit'); });
 
     expect(() => removeHandler('xyz', registry)).toThrow('exit');
     expect(console.error).toHaveBeenCalledWith('✗ Error: No apps match "xyz"');
+    expect(exitSpy).toHaveBeenCalledWith(1);
+
+    exitSpy.mockRestore();
+  });
+
+  it('throws error for multiple matches', () => {
+    const matches = [exampleApp, { ...exampleApp, name: 'ChatGPT2' }];
+    const registry = createMockRegistry({
+      findByName: vi.fn().mockReturnValue(undefined),
+      search: vi.fn().mockReturnValue(matches),
+    });
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => { throw new Error('exit'); });
+
+    expect(() => removeHandler('chat', registry)).toThrow('exit');
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Multiple apps match'));
     expect(exitSpy).toHaveBeenCalledWith(1);
 
     exitSpy.mockRestore();
