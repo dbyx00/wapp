@@ -1,13 +1,7 @@
 import { execSync } from 'child_process';
 import { join } from 'path';
 import { sanitizeFileName } from '../utils/sanitize';
-
-export interface ShortcutOptions {
-  name: string;
-  url: string;
-  browserPath: string;
-  iconPath: string;
-}
+import { ShortcutOptions } from '../domain/types';
 
 /**
  * Creates a Windows shortcut in the Start Menu Programs folder.

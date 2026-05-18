@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { createApp } from '../core/createApp';
 import { AppRegistry } from '../services/appRegistry';
+import { BrowserName } from '../domain/types';
 
 const program = new Command();
 
@@ -26,7 +27,7 @@ Examples:
       await createApp({
         url,
         name: options.name,
-        browser: options.browser as 'brave' | 'chrome' | 'edge',
+        browser: options.browser as BrowserName,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
