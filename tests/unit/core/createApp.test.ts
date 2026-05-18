@@ -4,7 +4,6 @@ import { createApp } from '../../../src/core/createApp';
 // Mock all dependencies
 vi.mock('../../../src/services/browserResolver', () => ({
   resolveBrowserPath: vi.fn(),
-  getAppArg: vi.fn(),
 }));
 
 vi.mock('../../../src/services/metadataResolver', () => ({
