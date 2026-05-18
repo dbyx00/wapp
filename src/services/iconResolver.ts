@@ -34,6 +34,7 @@ export async function resolveIcon(url: string, appName: string): Promise<string>
 /**
  * Attempts to download an icon from a URL and save it locally.
  * Returns true if successful.
+ * Validates that the downloaded file is a valid ICO format.
  */
 async function tryDownloadIcon(url: string, savePath: string): Promise<boolean> {
   try {
@@ -54,11 +55,25 @@ async function tryDownloadIcon(url: string, savePath: string): Promise<boolean> 
       return false;
     }
 
+    // Validate ICO magic bytes: 00 00 01 00
+    if (!isValidIco(buffer)) {
+      return false;
+    }
+
     writeFileSync(savePath, buffer);
     return true;
   } catch {
     return false;
   }
+}
+
+/**
+ * Checks if a buffer is a valid ICO file by examining magic bytes.
+ * ICO files start with: 00 00 (reserved), 01 00 (type: ICO), XX XX (image count)
+ */
+function isValidIco(buffer: Buffer): boolean {
+  if (buffer.length < 4) return false;
+  return buffer[0] === 0x00 && buffer[1] === 0x00 && buffer[2] === 0x01 && buffer[3] === 0x00;
 }
 
 /**

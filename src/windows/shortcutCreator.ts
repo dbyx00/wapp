@@ -79,7 +79,7 @@ function buildPowerShellScript(options: {
     `$shortcut = $shell.CreateShortcut('${escape(options.shortcutPath)}')`,
     `$shortcut.TargetPath = '${escape(options.targetPath)}'`,
     `$shortcut.Arguments = '${escape(options.arguments)}'`,
-    `$shortcut.IconLocation = '${escape(options.iconPath)}'`,
+    `$shortcut.IconLocation = '${escape(options.iconPath)},0'`,
     `$shortcut.Description = '${escape(options.description)}'`,
     `$shortcut.WorkingDirectory = (Split-Path '${escape(options.targetPath)}' -Parent)`,
     `$shortcut.Save()`,
