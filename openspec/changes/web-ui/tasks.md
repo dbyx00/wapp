@@ -42,33 +42,33 @@ Chain strategy: feature-branch-chain
 
 ## Phase 3: CLI Adapters
 
-- [ ] 3.1 Modify `src/cli/create.ts`: map `onEvent` to `console.log`, handle returned `AppEntry`
-- [ ] 3.2 Modify `src/cli/remove.ts`: call `removeApp()` with event adapter
-- [ ] 3.3 Modify `src/cli/list.ts`: call `listApps()` with event adapter
-- [ ] 3.4 Modify `src/cli/wappCommand.ts`: add `web` command
+- [x] 3.1 Modify `src/cli/create.ts`: map `onEvent` to `console.log`, handle returned `AppEntry`
+- [x] 3.2 Modify `src/cli/remove.ts`: call `removeApp()` with event adapter
+- [x] 3.3 Modify `src/cli/list.ts`: call `listApps()` with event adapter
+- [x] 3.4 Modify `src/cli/wappCommand.ts`: add `web` command
 
 ## Phase 4: API & SSE
 
-- [ ] 4.1 Create `src/api/adapters/sseAdapter.ts`: `OnEvent` → Hono `streamSSE`
-- [ ] 4.2 Create `src/api/routes/apps.ts`: `GET`, `POST` SSE, `DELETE` SSE endpoints
-- [ ] 4.3 Create `src/api/server.ts`: Hono bootstrap, static files, icons, graceful shutdown, bind `127.0.0.1`
+- [x] 4.1 Create `src/api/adapters/sseAdapter.ts`: `OnEvent` → Hono `streamSSE`
+- [x] 4.2 Create `src/api/routes/apps.ts`: `GET`, `POST` SSE, `DELETE` SSE endpoints
+- [x] 4.3 Create `src/api/server.ts`: Hono bootstrap, static files, icons, graceful shutdown, bind `127.0.0.1`
 
 ## Phase 5: Frontend
 
-- [ ] 5.1 Create `vite.config.ts` with Svelte plugin, build to `dist/public/`
-- [ ] 5.2 Create `src/web/main.ts`, `index.html`, Tailwind entry
-- [ ] 5.3 Create `src/web/App.svelte` with view switcher (list/create/remove)
-- [ ] 5.4 Create `src/web/stores/apps.ts` and `src/web/api/client.ts`
-- [ ] 5.5 Create `src/web/views/ListView.svelte`
-- [ ] 5.6 Create `src/web/views/CreateView.svelte` with SSE progress
-- [ ] 5.7 Create `src/web/views/RemoveView.svelte` with confirmation and SSE progress
+- [x] 5.1 Create `vite.config.ts` with Svelte plugin, build to `dist/public/`
+- [x] 5.2 Create `src/web/main.ts`, `index.html`, Tailwind entry
+- [x] 5.3 Create `src/web/App.svelte` with view switcher (list/create/remove)
+- [x] 5.4 Create `src/web/stores/apps.ts` and `src/web/api/client.ts`
+- [x] 5.5 Create `src/web/views/ListView.svelte`
+- [x] 5.6 Create `src/web/views/CreateView.svelte` with SSE progress
+- [x] 5.7 Create `src/web/views/RemoveView.svelte` with confirmation and SSE progress
 
 ## Phase 6: Testing & Verification
 
-- [ ] 6.1 Unit test `createApp` event sequence (Vitest, mocked services)
-- [ ] 6.2 Unit test `removeApp` event sequence
-- [ ] 6.3 Unit test `listApps` event sequence
-- [ ] 6.4 Unit test `sseAdapter` event→SSE conversion
-- [ ] 6.5 Integration test API endpoints with Hono test client
-- [ ] 6.6 Verify CLI `create`, `list`, `remove` output unchanged
-- [ ] 6.7 Verify `wapp web` starts on `localhost`, serves UI, binds `127.0.0.1`
+- [x] 6.1 Unit test `createApp` event sequence (Vitest, mocked services)
+- [x] 6.2 Unit test `removeApp` event sequence
+- [x] 6.3 Unit test `listApps` event sequence
+- [x] 6.4 Unit test `sseAdapter` event→SSE conversion
+- [x] 6.5 Integration test API endpoints with Hono test client
+- [x] 6.6 Verify CLI `create`, `list`, `remove` output unchanged
+- [x] 6.7 Verify `wapp web` starts on `localhost`, serves UI, binds `127.0.0.1`

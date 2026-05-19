@@ -22,7 +22,9 @@ export async function createApp(
   try {
     validatedUrl = validateUrl(options.url);
     emit({ step: 'validating', status: 'success', data: validatedUrl });
-    console.log(`✓ URL validated: ${validatedUrl}`);
+    if (!onEvent) {
+      console.log(`✓ URL validated: ${validatedUrl}`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'validating', status: 'error', error: message });
@@ -36,7 +38,9 @@ export async function createApp(
   try {
     browserPath = await resolveBrowserPath(browser);
     emit({ step: 'resolving-browser', status: 'success', data: browserPath });
-    console.log(`✓ Browser resolved: ${browser}`);
+    if (!onEvent) {
+      console.log(`✓ Browser resolved: ${browser}`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'resolving-browser', status: 'error', error: message });
@@ -49,7 +53,9 @@ export async function createApp(
   try {
     appName = await resolveMetadata(validatedUrl, options.name);
     emit({ step: 'resolving-name', status: 'success', data: appName });
-    console.log(`✓ App name: ${appName}`);
+    if (!onEvent) {
+      console.log(`✓ App name: ${appName}`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'resolving-name', status: 'error', error: message });
@@ -62,7 +68,9 @@ export async function createApp(
   try {
     iconPath = await resolveIcon(validatedUrl, appName);
     emit({ step: 'downloading-icon', status: 'success', data: iconPath });
-    console.log(`✓ Icon: ${iconPath}`);
+    if (!onEvent) {
+      console.log(`✓ Icon: ${iconPath}`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'downloading-icon', status: 'error', error: message });
@@ -80,7 +88,9 @@ export async function createApp(
       iconPath,
     });
     emit({ step: 'creating-shortcut', status: 'success', data: shortcutPath });
-    console.log(`✓ Shortcut: ${shortcutPath}`);
+    if (!onEvent) {
+      console.log(`✓ Shortcut: ${shortcutPath}`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'creating-shortcut', status: 'error', error: message });
@@ -99,7 +109,9 @@ export async function createApp(
   try {
     options.registry.add(entry);
     emit({ step: 'registering', status: 'success' });
-    console.log(`✓ App registered`);
+    if (!onEvent) {
+      console.log(`✓ App registered`);
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     emit({ step: 'registering', status: 'error', error: message });

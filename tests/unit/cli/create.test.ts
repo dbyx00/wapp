@@ -33,25 +33,45 @@ describe('createHandler', () => {
   });
 
   it('calls createApp with correct parameters', async () => {
+    mockCreateApp.mockResolvedValue({
+      name: 'Test',
+      url: 'https://example.com',
+      browser: 'chrome',
+      iconPath: '',
+      shortcutPath: '',
+      createdAt: '',
+    });
     const registry = createMockRegistry();
 
     await createHandler('https://example.com', { name: 'Test', browser: 'chrome' }, registry);
 
-    expect(mockCreateApp).toHaveBeenCalledWith({
-      url: 'https://example.com',
-      name: 'Test',
-      browser: 'chrome',
-      registry,
-    });
+    expect(mockCreateApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://example.com',
+        name: 'Test',
+        browser: 'chrome',
+        registry,
+      }),
+      expect.any(Function)
+    );
   });
 
   it('defaults browser to brave when not specified', async () => {
+    mockCreateApp.mockResolvedValue({
+      name: 'Test',
+      url: 'https://example.com',
+      browser: 'brave',
+      iconPath: '',
+      shortcutPath: '',
+      createdAt: '',
+    });
     const registry = createMockRegistry();
 
     await createHandler('https://example.com', {}, registry);
 
     expect(mockCreateApp).toHaveBeenCalledWith(
-      expect.objectContaining({ browser: 'brave' })
+      expect.objectContaining({ browser: 'brave' }),
+      expect.any(Function)
     );
   });
 

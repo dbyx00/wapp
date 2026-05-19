@@ -1,21 +1,28 @@
+import { listApps } from '../core/listApps';
+import { AppEvent } from '../domain/events';
+import { AppEntry } from '../domain/types';
 import { IAppRegistry } from '../domain/appRegistry';
 
-export function listHandler(registry: IAppRegistry): void {
-  const apps = registry.list();
+export async function listHandler(registry: IAppRegistry): Promise<void> {
+  await listApps(registry, (event: AppEvent) => {
+    if (event.step === 'listed' && event.status === 'success') {
+      const { apps, count } = event.data as { apps: AppEntry[]; count: number };
 
-  if (apps.length === 0) {
-    console.log('No WApps installed. Use "wapp create <url>" to create one.');
-    return;
-  }
+      if (count === 0) {
+        console.log('No WApps installed. Use "wapp create <url>" to create one.');
+        return;
+      }
 
-  console.log(`📱 Installed WApps (${apps.length}):`);
-  console.log('');
-  apps.forEach((app, index) => {
-    const created = new Date(app.createdAt).toLocaleDateString();
-    console.log(`  ${index + 1}. ${app.name}`);
-    console.log(`     URL: ${app.url}`);
-    console.log(`     Browser: ${app.browser}`);
-    console.log(`     Created: ${created}`);
-    console.log('');
+      console.log(`📱 Installed WApps (${count}):`);
+      console.log('');
+      apps.forEach((app, index) => {
+        const created = new Date(app.createdAt).toLocaleDateString();
+        console.log(`  ${index + 1}. ${app.name}`);
+        console.log(`     URL: ${app.url}`);
+        console.log(`     Browser: ${app.browser}`);
+        console.log(`     Created: ${created}`);
+        console.log('');
+      });
+    }
   });
 }
