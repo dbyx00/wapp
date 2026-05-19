@@ -3,7 +3,9 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
 import { exec } from 'child_process';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { existsSync } from 'fs';
+import { isSea } from 'node:sea';
 import appsRoute from './routes/apps';
 import { ICONS_DIR } from '../config/paths';
 
@@ -33,7 +35,15 @@ app.use('/icons/*', serveStatic({
 }));
 
 // Serve static frontend files built by Vite (Phase 5)
-app.use('/*', serveStatic({ root: join(process.cwd(), 'dist/public') }));
+export const publicDir = isSea()
+  ? join(dirname(process.execPath), 'public')
+  : join(process.cwd(), 'dist/public');
+
+if (isSea() && !existsSync(publicDir)) {
+  console.error(`Public directory not found at ${publicDir}`);
+}
+
+app.use('/*', serveStatic({ root: publicDir }));
 
 /**
  * Starts the Hono server on the given port (default 3000).
