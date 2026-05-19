@@ -1,0 +1,173 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      # Expose whether SignPath token is present so downstream jobs can decide
+      signpath_available: ${{ steps.check_signpath.outputs.available }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm run build:all
+
+      - run: node scripts/render-manifests.js
+
+      - name: Install Inno Setup
+        run: choco install innosetup
+
+      - name: Build installer
+        run: iscc installer/wapp.iss
+
+      - name: Check SignPath secret
+        id: check_signpath
+        shell: bash
+        run: |
+          if [ -n "$SIGNPATH_API_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            dist/wapp.exe
+            dist/WApp-Setup-*.exe
+
+  # TODO: Activate SignPath signing once account is approved at signpath.org
+  sign:
+    needs: build
+    runs-on: ubuntu-latest
+    # Only run when SignPath API token is configured
+    if: needs.build.outputs.signpath_available == 'true'
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      - uses: SignPath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-name: build-artifacts
+          wait-for-completion: true
+        continue-on-error: true
+
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-artifacts
+          path: dist
+
+  # TODO: Enable MSIX packaging once Microsoft Partner account is configured
+  msix:
+    needs: build
+    runs-on: windows-latest
+    # Only run when explicitly enabled via repository variable
+    if: vars.MSIX_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: node scripts/render-manifests.js
+
+      - name: Build MSIX package
+        run: npm run build:msix
+
+      - name: Upload MSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: msix-artifact
+          path: dist/*.msix
+
+  release:
+    needs:
+      - build
+      - sign
+      - msix
+    runs-on: ubuntu-latest
+    # Publish even if optional sign/msix jobs are skipped or fail
+    if: always() && needs.build.result == 'success'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
+
+      - name: Download signed artifacts (if available)
+        uses: actions/download-artifact@v4
+        with:
+          name: signed-artifacts
+          path: dist-signed
+        continue-on-error: true
+
+      - name: Download MSIX artifact (if available)
+        uses: actions/download-artifact@v4
+        with:
+          name: msix-artifact
+          path: dist-msix
+        continue-on-error: true
+
+      - name: Prepare release assets
+        shell: bash
+        run: |
+          mkdir -p release-assets
+          # Prefer signed artifacts if available, otherwise use unsigned build artifacts
+          if [ -d "dist-signed" ] && [ "$(ls -A dist-signed)" ]; then
+            cp dist-signed/* release-assets/
+          else
+            cp dist/* release-assets/
+          fi
+          # Include MSIX if it was built
+          if [ -d "dist-msix" ] && [ "$(ls -A dist-msix)" ]; then
+            cp dist-msix/*.msix release-assets/
+          fi
+          ls -la release-assets/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            ## Microsoft Store
+
+            **Status:** Not yet available for this release.
+
+            > Will be updated when the app is published to the Microsoft Store.
+
+            ---
+
+            ## Standalone Installer
+
+            ⚠️ **SmartScreen notice:** This installer is not commercially signed. Windows may show a "Windows protected your PC" warning.
+            > Click **More info** → **Run anyway** to proceed. The source code is open for verification.
+          files: |
+            release-assets/wapp.exe
+            release-assets/WApp-Setup-*.exe
+            release-assets/*.msix
+          fail_on_unmatched_files: false
