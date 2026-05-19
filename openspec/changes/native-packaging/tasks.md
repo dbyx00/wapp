@@ -23,25 +23,25 @@ Decision resolved: feature-branch-chain
 
 ## Phase 1: Foundation
 
-- [ ] 1.1 Create `src/config/app.ts` with APP constant (name, slug, version, description, dataDir) (S)
-- [ ] 1.2 Update `src/config/paths.ts` to import `dataDir` from `app.ts` (S)
-- [ ] 1.3 Update `src/cli/wappCommand.ts` to import version/name/description from `app.ts` (S)
-- [ ] 1.4 Update `src/cli/create.ts`, `list.ts`, `remove.ts` to use `app.name`/`app.namePlural` (S)
-- [ ] 1.5 Update tests with hardcoded "WApp" to assert via imported identity (S)
+- [x] 1.1 Create `src/config/app.ts` with APP constant (name, slug, version, description, dataDir) (S)
+- [x] 1.2 Update `src/config/paths.ts` to import `dataDir` from `app.ts` (S)
+- [x] 1.3 Update `src/cli/wappCommand.ts` to import version/name/description from `app.ts` (S)
+- [x] 1.4 Update `src/cli/create.ts`, `list.ts`, `remove.ts` to use `app.name`/`app.namePlural` (S)
+- [x] 1.5 Update tests with hardcoded "WApp" to assert via imported identity (S)
 
 ## Phase 2: Build Pipeline
 
-- [ ] 2.1 Add `esbuild` devDep and `build:bundle` script to `package.json` (S)
-- [ ] 2.2 Create `sea-config.json` with `main: dist/bundle.js`, `output: dist/wapp.exe` (S)
-- [ ] 2.3 Create `scripts/build-exe.js` running esbuild then `node --build-sea` (M)
-- [ ] 2.4 Add `build:exe` and `build:all` scripts to `package.json` (S)
-- [ ] 2.5 Verify `npm run build:all` produces runnable `dist/wapp.exe --version` (M)
+- [x] 2.1 Add `esbuild` devDep and `build:bundle` script to `package.json` (S)
+- [x] 2.2 Create `sea-config.json` with `main: dist/bundle.js`, `output: dist/sea.blob` (S)
+- [x] 2.3 Create `scripts/build-exe.js` running esbuild then `node --experimental-sea-config` and postject injection (M)
+- [x] 2.4 Add `build:exe` and `build:all` scripts to `package.json` (S)
+- [x] 2.5 Verify `npm run build:all` produces runnable `dist/wapp.exe --version` (M)
 
 ## Phase 3: SEA Path Resolution
 
-- [ ] 3.1 Modify `src/api/server.ts` to use `isSea()` for static root; dev mode unchanged (M)
-- [ ] 3.2 Add test mocking `node:sea` to assert exe-relative `public/` path in SEA mode (M)
-- [ ] 3.3 Verify `npm run dev` still serves static files from `dist/public` (S)
+- [x] 3.1 Modify `src/api/server.ts` to use `isSea()` for static root; dev mode unchanged (M)
+- [x] 3.2 Add test mocking `node:sea` to assert exe-relative `public/` path in SEA mode (M)
+- [x] 3.3 Verify `npm run dev` still serves static files from `dist/public` (S)
 
 ## Phase 4: Manifest Rendering
 
