@@ -1,6 +1,6 @@
 import { removeApp } from '../core/removeApp';
-import { AppEvent } from '../domain/events';
-import { IAppRegistry } from '../domain/appRegistry';
+import type { AppEvent } from '../domain/events';
+import type { IAppRegistry } from '../domain/appRegistry';
 
 export async function removeHandler(query: string, registry: IAppRegistry): Promise<void> {
   try {

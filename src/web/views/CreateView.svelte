@@ -2,7 +2,7 @@
   import { Button, Card, Input, Select } from '../lib/components';
   import { createApp as apiCreateApp } from '../api/client';
   import { addApp } from '../stores/apps.svelte';
-  import { AppEvent } from '../../domain/events';
+  import type { AppEvent } from '../../domain/events';
   import type { AppEntry } from '../../domain/types';
 
   interface Props {

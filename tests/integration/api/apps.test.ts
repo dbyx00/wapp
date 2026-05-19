@@ -120,4 +120,58 @@ describe('API endpoints', () => {
     expect(events.length).toBeGreaterThanOrEqual(1);
     expect(events.some((e) => e.event === 'removed')).toBe(true);
   });
+
+  it('DELETE /api/apps/nonexistent emits error event via SSE', async () => {
+    mockRemoveApp.mockImplementation(async (_query, _registry, onEvent) => {
+      if (onEvent) {
+        onEvent({ step: 'finding-app', status: 'start' });
+        onEvent({ step: 'finding-app', status: 'error', error: 'No apps match "NonExistent"' });
+      }
+      throw new Error('No apps match "NonExistent"');
+    });
+
+    const res = await app.request('/api/apps/NonExistent', {
+      method: 'DELETE',
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/event-stream');
+
+    const events = await readSSEEvents(res);
+    const findingAppEvents = events.filter((e) => e.event === 'finding-app');
+    expect(findingAppEvents.length).toBeGreaterThanOrEqual(2);
+    expect(findingAppEvents.some((e) => (e.data as any)?.status === 'error')).toBe(true);
+  });
+
+  it('POST /api/apps with missing url returns 400', async () => {
+    const res = await app.request('/api/apps', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'No URL' }),
+    });
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toContain('url');
+  });
+
+  it('POST /api/apps with empty body returns 400', async () => {
+    const res = await app.request('/api/apps', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /api/apps with invalid JSON returns 400', async () => {
+    const res = await app.request('/api/apps', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: 'not-json',
+    });
+
+    expect(res.status).toBe(400);
+  });
 });

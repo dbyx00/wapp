@@ -58,7 +58,7 @@ Chain strategy: feature-branch-chain
 - [x] 5.1 Create `vite.config.ts` with Svelte plugin, build to `dist/public/`
 - [x] 5.2 Create `src/web/main.ts`, `index.html`, Tailwind entry
 - [x] 5.3 Create `src/web/App.svelte` with view switcher (list/create/remove)
-- [x] 5.4 Create `src/web/stores/apps.ts` and `src/web/api/client.ts`
+- [x] 5.4 Create `src/web/stores/apps.svelte.ts` and `src/web/api/client.ts`
 - [x] 5.5 Create `src/web/views/ListView.svelte`
 - [x] 5.6 Create `src/web/views/CreateView.svelte` with SSE progress
 - [x] 5.7 Create `src/web/views/RemoveView.svelte` with confirmation and SSE progress

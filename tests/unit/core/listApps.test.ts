@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { listApps } from '../../../src/core/listApps';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
-import { AppEntry } from '../../../src/domain/types';
-import { AppEvent } from '../../../src/domain/events';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { AppEntry } from '../../../src/domain/types';
+import type { AppEvent } from '../../../src/domain/events';
 
 const mockApps: AppEntry[] = [
   {

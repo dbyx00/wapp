@@ -1,7 +1,7 @@
 import { listApps } from '../core/listApps';
-import { AppEvent } from '../domain/events';
-import { AppEntry } from '../domain/types';
-import { IAppRegistry } from '../domain/appRegistry';
+import type { AppEvent } from '../domain/events';
+import type { AppEntry } from '../domain/types';
+import type { IAppRegistry } from '../domain/appRegistry';
 
 export async function listHandler(registry: IAppRegistry): Promise<void> {
   await listApps(registry, (event: AppEvent) => {

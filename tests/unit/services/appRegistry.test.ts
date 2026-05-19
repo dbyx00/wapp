@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AppRegistry } from '../../../src/services/appRegistry';
-import { AppEntry } from '../../../src/domain/types';
+import type { AppEntry } from '../../../src/domain/types';
 
 // Mock delegated modules
 vi.mock('../../../src/services/registryPersistence', () => ({

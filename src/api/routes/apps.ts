@@ -23,15 +23,28 @@ apps.get('/', async (c) => {
  * Returns an SSE stream of AppEvents. The final event contains the created AppEntry.
  */
 apps.post('/', async (c) => {
-  const body = await c.req.json<{ url: string; name?: string; browser?: string }>();
+  let body: { url?: string; name?: string; browser?: string };
+  try {
+    body = await c.req.json<{ url?: string; name?: string; browser?: string }>();
+  } catch {
+    return c.json({ error: 'Invalid JSON body' }, 400);
+  }
+
+  if (!body.url || typeof body.url !== 'string' || !body.url.trim()) {
+    return c.json({ error: 'Missing or invalid required field: url' }, 400);
+  }
+
+  const url = body.url;
+  const name = body.name;
+  const browser = body.browser;
   const registry = new AppRegistry();
 
   return sseAdapter(c, async (onEvent) => {
     await createApp(
       {
-        url: body.url,
-        name: body.name,
-        browser: body.browser as any,
+        url,
+        name,
+        browser: browser as any,
         registry,
       },
       onEvent

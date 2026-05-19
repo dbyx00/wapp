@@ -1,6 +1,6 @@
 import { streamSSE } from 'hono/streaming';
 import type { Context } from 'hono';
-import { AppEvent, OnEvent } from '../../domain/events';
+import type { AppEvent, OnEvent } from '../../domain/events';
 
 /**
  * Creates an SSE stream response and invokes the handler with an OnEvent
@@ -15,7 +15,12 @@ export function sseAdapter(
   handler: (onEvent: OnEvent) => Promise<void>
 ): Response {
   return streamSSE(c, async (stream) => {
+    let errorEmitted = false;
+
     const onEvent: OnEvent = (event: AppEvent) => {
+      if (event.status === 'error') {
+        errorEmitted = true;
+      }
       stream.writeSSE({
         data: JSON.stringify(event),
         event: event.step,
@@ -25,15 +30,19 @@ export function sseAdapter(
     try {
       await handler(onEvent);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      stream.writeSSE({
-        data: JSON.stringify({
-          step: 'error',
-          status: 'error',
-          error: message,
-        } as AppEvent),
-        event: 'error',
-      });
+      // Only emit a catch-all error if the handler didn't already
+      // emit an error event before throwing
+      if (!errorEmitted) {
+        const message = error instanceof Error ? error.message : String(error);
+        stream.writeSSE({
+          data: JSON.stringify({
+            step: 'error',
+            status: 'error',
+            error: message,
+          } as AppEvent),
+          event: 'error',
+        });
+      }
     }
   });
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createApp } from '../../../src/core/createApp';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
 
 // Mock service dependencies (but NOT AppRegistry anymore)
 vi.mock('../../../src/services/browserResolver', () => ({

@@ -10,7 +10,7 @@ Refactor core operations (`createApp`, `removeApp`, `listApps`) to emit typed `A
 |----------|--------|--------------|-----------|
 | HTTP framework | Hono | Express, Fastify | Native `streamSSE()`, lighter, type-safe middleware |
 | Frontend framework | Svelte 5 | Preact, SolidJS, Vanilla | Compile-time zero-runtime; runes match reactive SSE streams |
-| UI primitives | shadcn-svelte | Raw Tailwind, other libs | Copy-paste components; accessible Dialog/Toast/Progress |
+| UI primitives | Custom Tailwind (shadcn-inspired) | Raw Tailwind, other libs, shadcn-svelte | Copy-paste accessible components using Tailwind utility classes; avoids the shadcn-svelte dependency overhead while matching the visual intent and accessibility patterns |
 | Progress streaming | Typed `AppEvent` callback | Parse stdout, wrappers | Type-safe, testable, optional (backward compatible) |
 | Transport | SSE | WebSocket, long-polling | Unidirectional; no upgrade; first-class Hono support |
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { removeHandler } from '../../../src/cli/remove';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
-import { AppEntry } from '../../../src/domain/types';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { AppEntry } from '../../../src/domain/types';
 
 const exampleApp: AppEntry = {
   name: 'ChatGPT',

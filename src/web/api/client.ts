@@ -1,5 +1,5 @@
 import { AppEntry } from '../../domain/types';
-import { AppEvent } from '../../domain/events';
+import type { AppEvent } from '../../domain/events';
 
 export async function fetchApps(): Promise<AppEntry[]> {
   const response = await fetch('/api/apps');
@@ -83,18 +83,20 @@ export async function createApp(
 
   let finalResult: AppEntry | undefined;
   let hadError = false;
+  let errorMessage: string | undefined;
 
   await parseSSEStream(response.body.getReader(), (event) => {
     onEvent?.(event);
     if (event.status === 'error') {
       hadError = true;
+      errorMessage = event.error || 'Creation failed';
     }
     if (event.data && typeof event.data === 'object' && 'name' in event.data) {
       finalResult = event.data as AppEntry;
     }
   });
 
-  onComplete?.(!hadError, finalResult, hadError ? 'Creation failed' : undefined);
+  onComplete?.(!hadError, finalResult, hadError ? errorMessage : undefined);
 }
 
 export async function removeApp(
@@ -119,16 +121,18 @@ export async function removeApp(
 
   let finalResult: AppEntry | undefined;
   let hadError = false;
+  let errorMessage: string | undefined;
 
   await parseSSEStream(response.body.getReader(), (event) => {
     onEvent?.(event);
     if (event.status === 'error') {
       hadError = true;
+      errorMessage = event.error || 'Removal failed';
     }
     if (event.data && typeof event.data === 'object' && 'name' in event.data) {
       finalResult = event.data as AppEntry;
     }
   });
 
-  onComplete?.(!hadError, finalResult, hadError ? 'Removal failed' : undefined);
+  onComplete?.(!hadError, finalResult, hadError ? errorMessage : undefined);
 }

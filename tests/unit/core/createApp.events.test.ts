@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createApp } from '../../../src/core/createApp';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
-import { AppEvent } from '../../../src/domain/events';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { AppEvent } from '../../../src/domain/events';
 
 // Mock service dependencies
 vi.mock('../../../src/services/browserResolver', () => ({
@@ -175,5 +175,43 @@ describe('createApp event sequence', () => {
     });
 
     expect(result.name).toBe('Example Site');
+  });
+
+  it('emits registering error event when app name already exists', async () => {
+    mockValidateUrl.mockReturnValue('https://example.com/');
+    mockResolveBrowserPath.mockResolvedValue('C:\\Brave\\brave.exe');
+    mockResolveMetadata.mockResolvedValue('Example Site');
+    mockResolveIcon.mockResolvedValue('C:\\icons\\Example.ico');
+    mockCreateShortcut.mockResolvedValue('C:\\StartMenu\\Example.lnk');
+
+    const registry = createMockRegistry();
+    registry.add = vi.fn().mockImplementation(() => {
+      throw new Error('App with name "Example Site" already exists');
+    });
+
+    const events: AppEvent[] = [];
+    const collector = (event: AppEvent) => events.push(event);
+
+    await expect(
+      createApp(
+        {
+          url: 'https://example.com',
+          name: 'Example Site',
+          browser: 'brave',
+          registry,
+        },
+        collector
+      )
+    ).rejects.toThrow('App with name "Example Site" already exists');
+
+    // Verify the registering step emitted start + error
+    const registeringEvents = events.filter((e) => e.step === 'registering');
+    expect(registeringEvents).toEqual([
+      { step: 'registering', status: 'start' },
+      { step: 'registering', status: 'error', error: 'App with name "Example Site" already exists' },
+    ]);
+
+    // Verify preceding steps completed successfully
+    expect(events.some((e) => e.step === 'creating-shortcut' && e.status === 'success')).toBe(true);
   });
 });

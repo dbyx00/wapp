@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { removeApp } from '../../../src/core/removeApp';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
-import { AppEntry } from '../../../src/domain/types';
-import { AppEvent } from '../../../src/domain/events';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { AppEntry } from '../../../src/domain/types';
+import type { AppEvent } from '../../../src/domain/events';
 
 vi.mock('../../../src/services/fileService', () => ({
   deleteFile: vi.fn(),

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHandler } from '../../../src/cli/create';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
 
 // Mock createApp dependencies
 vi.mock('../../../src/core/createApp', () => ({

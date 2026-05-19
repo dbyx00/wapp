@@ -1,7 +1,7 @@
 import { createApp } from '../core/createApp';
-import { AppEvent } from '../domain/events';
-import { IAppRegistry } from '../domain/appRegistry';
-import { BrowserName } from '../domain/types';
+import type { AppEvent } from '../domain/events';
+import type { IAppRegistry } from '../domain/appRegistry';
+import type { BrowserName } from '../domain/types';
 
 export interface CreateHandlerOptions {
   name?: string;

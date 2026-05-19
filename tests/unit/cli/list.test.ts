@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { listHandler } from '../../../src/cli/list';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
-import { AppEntry } from '../../../src/domain/types';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { AppEntry } from '../../../src/domain/types';
 
 // Mock listApps
 vi.mock('../../../src/core/listApps', () => ({

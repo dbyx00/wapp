@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { sseAdapter } from '../../../src/api/adapters/sseAdapter';
-import { AppEvent } from '../../../src/domain/events';
-import { Context } from 'hono';
+import type { AppEvent } from '../../../src/domain/events';
+import type { Context } from 'hono';
 
 vi.mock('hono/streaming', () => ({
   streamSSE: vi.fn(),
@@ -81,5 +81,37 @@ describe('sseAdapter', () => {
       error: 'Something went wrong',
     });
     expect(writtenEvents[0].event).toBe('error');
+  });
+
+  it('does not duplicate error event when handler already emitted one', async () => {
+    const writtenEvents: Array<{ data: string; event: string }> = [];
+    const mockStream = {
+      writeSSE: vi.fn((payload: { data: string; event: string }) => {
+        writtenEvents.push(payload);
+      }),
+    };
+
+    mockStreamSSE.mockImplementation(async (_c, handler) => {
+      await handler(mockStream as any);
+      return new Response();
+    });
+
+    const c = createMockContext();
+    const handler = async (onEvent: (event: AppEvent) => void) => {
+      onEvent({ step: 'registering', status: 'start' });
+      onEvent({ step: 'registering', status: 'error', error: 'Duplicate name' });
+      throw new Error('Duplicate name');
+    };
+
+    sseAdapter(c, handler);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Should only have the 2 events from onEvent, NOT a third catch-all error
+    expect(writtenEvents).toHaveLength(2);
+    expect(writtenEvents[0].event).toBe('registering');
+    expect(writtenEvents[1].event).toBe('registering');
+    const parsed = JSON.parse(writtenEvents[1].data);
+    expect(parsed.status).toBe('error');
+    expect(parsed.error).toBe('Duplicate name');
   });
 });

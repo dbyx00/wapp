@@ -9,7 +9,7 @@ Add a browser-based UI so non-technical users can create, list, and remove WApps
 ### In Scope
 - Event-driven core refactor: `createApp`, `list`, `remove` emit typed step events
 - Hono HTTP API with SSE streaming for all operations
-- Svelte 5 SPA with shadcn-svelte components and Tailwind CSS
+- Svelte 5 SPA with custom Tailwind components (shadcn-inspired patterns) and Tailwind CSS
 - `wapp web` command to start server, serve static files, and open browser
 - Icons served statically from `%APPDATA%/WApp/icons/`
 
@@ -29,18 +29,18 @@ Add a browser-based UI so non-technical users can create, list, and remove WApps
 
 ## Approach
 
-Refactor the core to emit typed events through an optional callback. Build a Hono server that injects an SSE-streaming `onEvent` into each operation. Build a Svelte 5 SPA that consumes SSE to render live step progress. Use shadcn-svelte for accessible UI primitives (Card, Button, Dialog, Toast, Progress). Vite builds the frontend; Hono serves `dist/public/` and binds to `127.0.0.1` only.
+Refactor the core to emit typed events through an optional callback. Build a Hono server that injects an SSE-streaming `onEvent` into each operation. Build a Svelte 5 SPA that consumes SSE to render live step progress. Use custom Tailwind components inspired by shadcn-svelte patterns for accessible UI primitives (Card, Button, Dialog, Progress). Vite builds the frontend; Hono serves `dist/public/` and binds to `127.0.0.1` only.
 
 ## Affected Areas
 
 | Area | Impact | Description |
 |------|--------|-------------|
-| `src/domain/events.ts` | New | `AppEvent` union type and `OnEvent` callback type |
+| `src/domain/events.ts` | New | `AppEvent` interface and `OnEvent` callback type |
 | `src/core/createApp.ts` | Modified | Accept `onEvent`, return `AppEntry`, emit step events |
 | `src/cli/` | Modified | Adapters map events to `console.log` |
 | `src/api/` | New | Hono server, routes, SSE streaming, error handling |
 | `src/web/` | New | Svelte 5 entry, components, stores, API client |
-| `package.json` | Modified | Add `hono`, `@hono/node-server`, `svelte`, `vite`, `@sveltejs/vite-plugin-svelte`, `tailwindcss`, `shadcn-svelte` deps |
+| `package.json` | Modified | Add `hono`, `@hono/node-server`, `svelte`, `vite`, `@sveltejs/vite-plugin-svelte`, `tailwindcss` deps |
 
 ## Risks
 

@@ -6,9 +6,9 @@ Define the typed event system that exposes granular progress and error informati
 
 ## Requirements
 
-### Requirement: AppEvent Union Type
+### Requirement: AppEvent Type
 
-The system MUST define an `AppEvent` union type covering create, list, and remove operations.
+The system MUST define an `AppEvent` interface covering create, list, and remove operations.
 
 Each event object MUST contain:
 - `step`: string identifying the operation step
