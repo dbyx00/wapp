@@ -2,6 +2,23 @@
 
 Convert any URL into an installable Windows app with a Start Menu shortcut.
 
+## Install
+
+### Microsoft Store
+
+[![Get it from Microsoft Store](https://get.microsoft.com/badge)](https://apps.microsoft.com/detail/TODO-REPLACE)
+
+> Coming soon — the Store listing will be updated once the app is published.
+
+### Standalone Installer
+
+Download the latest `WApp-Setup-*.exe` from [GitHub Releases](https://github.com/GentlemanProgramming/wapp/releases).
+
+⚠️ **SmartScreen notice:** This installer is not commercially signed. Windows may show a "Windows protected your PC" warning.
+> Click **More info** → **Run anyway** to proceed. The source code is open for verification.
+
+No administrator privileges are required — the installer places files in `%LOCALAPPDATA%\Programs\wapp`.
+
 ## Usage
 
 ```bash

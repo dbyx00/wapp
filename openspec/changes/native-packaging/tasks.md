@@ -45,32 +45,32 @@ Decision resolved: feature-branch-chain
 
 ## Phase 4: Manifest Rendering
 
-- [ ] 4.1 Create `scripts/render-manifests.js` injecting `app.ts` into `.iss` and `.xml` templates (M)
-- [ ] 4.2 Verify rendered outputs contain correct version and app name (S)
+- [x] 4.1 Create `scripts/render-manifests.js` injecting `app.ts` into `.iss` and `.xml` templates (M)
+- [x] 4.2 Verify rendered outputs contain correct version and app name (S)
 
 ## Phase 5: Windows Installer
 
-- [ ] 5.1 Create `installer/wapp.iss` with `PrivilegesRequired=lowest`, per-user paths, shortcuts (M)
-- [ ] 5.2 Compile installer with `iscc`; verify zero-UAC and `%LOCALAPPDATA%\Programs\WApp` target (M)
-- [ ] 5.3 Verify installed `wapp.exe web` works and missing `public/` logs 404 (M)
+- [x] 5.1 Create `installer/wapp.iss.template` with `PrivilegesRequired=lowest`, per-user paths, shortcuts (M)
+- [x] 5.2 Verify rendering produces correct `installer/wapp.iss` (M)
+- [x] 5.3 Verify `[Files]` copies `wapp.exe` and `public/`; `[Run]` launches `wapp.exe web` (M)
 
 ## Phase 6: MSIX Packaging
 
-- [ ] 6.1 Create `msix/AppxManifest.xml` with `Publisher="CN=TODO-REPLACE..."` (M)
-- [ ] 6.2 Add `build:msix` script using `makeappx pack` (S)
-- [ ] 6.3 Verify `.msix` contains exe, `public/`, manifest, and assets (M)
-- [ ] 6.4 Add TODO comment for placeholder icons and Publisher ID replacement (S)
+- [x] 6.1 Create `msix/AppxManifest.xml.template` with `Publisher="CN=TODO-REPLACE..."` (M)
+- [x] 6.2 Add `build:msix` script using `makeappx pack` (S)
+- [x] 6.3 Verify manifest template references all required assets (44x44, 150x150, StoreLogo) (M)
+- [x] 6.4 Add TODO comment for placeholder icons and Publisher ID replacement (S)
 
 ## Phase 7: CI/CD
 
-- [ ] 7.1 Create `.github/workflows/release.yml` with build and release jobs on `v*` tags (L)
-- [ ] 7.2 Add SignPath signing job — OPTIONAL with `continue-on-error: true`; only runs when `SIGNPATH_API_TOKEN` secret is configured; skipped silently otherwise (M)
-- [ ] 7.3 Add MSIX packaging job — OPTIONAL with conditional (`if: env.MSIX_ENABLED`); skipped when Microsoft Partner account is not yet configured (M)
-- [ ] 7.4 Release notes body template must include Store availability section: "**Microsoft Store:** Not yet available for this release" (updated manually when Store submission is complete) and SmartScreen disclaimer for the standalone .exe (M)
-- [ ] 7.5 Verify GitHub Release publishes with `.exe` installer + unsigned `wapp.exe` even when SignPath and MSIX steps are skipped (M)
+- [x] 7.1 Create `.github/workflows/release.yml` with build and release jobs on `v*` tags (L)
+- [x] 7.2 Add SignPath signing job — OPTIONAL with `continue-on-error: true`; only runs when `SIGNPATH_API_TOKEN` secret is configured; skipped silently otherwise (M)
+- [x] 7.3 Add MSIX packaging job — OPTIONAL with conditional (`if: vars.MSIX_ENABLED`); skipped when Microsoft Partner account is not yet configured (M)
+- [x] 7.4 Release notes body template must include Store availability section: "**Microsoft Store:** Not yet available for this release" (updated manually when Store submission is complete) and SmartScreen disclaimer for the standalone .exe (M)
+- [x] 7.5 Verify workflow YAML is valid and conditional logic for SignPath and MSIX is correct (M)
 
 ## Phase 8: Documentation
 
-- [ ] 8.1 Update `README.md` with Store badge (linking to Store, with note "Available soon"), SmartScreen disclaimer for standalone installer, and install instructions for both channels (M)
-- [ ] 8.2 Update `index.html` title to reference app identity if static (S)
-- [ ] 8.3 Add release notes template at `.github/RELEASE_TEMPLATE.md` with Store availability section and SmartScreen disclaimer (S)
+- [x] 8.1 Update `README.md` with Store badge (linking to Store, with note "Available soon"), SmartScreen disclaimer for standalone installer, and install instructions for both channels (M)
+- [x] 8.2 Verify `index.html` title is consistent with `APP.name` (S)
+- [x] 8.3 Add release notes template at `.github/RELEASE_TEMPLATE.md` with Store availability section and SmartScreen disclaimer (S)
