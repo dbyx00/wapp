@@ -104,17 +104,17 @@
 
   {#if !completed}
     <Card class="p-6">
-      <form onsubmit={handleSubmit} class="space-y-4">
-        <div class="space-y-2">
-          <label for="url" class="text-sm font-medium text-gray-300">URL *</label>
+      <form onsubmit={handleSubmit} class="space-y-5">
+        <div>
+          <label for="url" class="mb-1.5 block text-sm font-medium text-gray-300">URL *</label>
           <Input id="url" type="url" placeholder="https://example.com" bind:value={url} required />
         </div>
-        <div class="space-y-2">
-          <label for="name" class="text-sm font-medium text-gray-300">App Name</label>
+        <div>
+          <label for="name" class="mb-1.5 block text-sm font-medium text-gray-300">App Name</label>
           <Input id="name" type="text" placeholder="My App (optional)" bind:value={name} />
         </div>
-        <div class="space-y-2">
-          <label for="browser" class="text-sm font-medium text-gray-300">Browser</label>
+        <div>
+          <label for="browser" class="mb-1.5 block text-sm font-medium text-gray-300">Browser</label>
           <Select id="browser" options={browserOptions} bind:value={browser} />
         </div>
         <div class="flex gap-3 pt-2">

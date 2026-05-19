@@ -25,7 +25,12 @@ app.use(
 app.route('/api/apps', appsRoute);
 
 // Serve icons from %APPDATA%/WApp/icons/
-app.use('/icons/*', serveStatic({ root: ICONS_DIR }));
+// rewriteRequestPath strips the /icons prefix so /icons/ChatGPT.ico
+// maps to ICONS_DIR/ChatGPT.ico instead of ICONS_DIR/icons/ChatGPT.ico
+app.use('/icons/*', serveStatic({
+  root: ICONS_DIR,
+  rewriteRequestPath: (path) => path.replace(/^\/icons/, ''),
+}));
 
 // Serve static frontend files built by Vite (Phase 5)
 app.use('/*', serveStatic({ root: join(process.cwd(), 'dist/public') }));
