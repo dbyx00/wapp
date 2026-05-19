@@ -3,6 +3,7 @@ import { resolveMetadata } from '../services/metadataResolver';
 import { resolveIcon } from '../services/iconResolver';
 import { createShortcut } from '../windows/shortcutCreator';
 import { validateUrl } from '../utils/url';
+import { APP } from '../config/app';
 import { CreateAppOptions, AppEntry } from '../domain/types';
 import { AppEvent, OnEvent } from '../domain/events';
 
@@ -126,7 +127,7 @@ export async function createApp(
   // Final output (backward compatibility)
   if (!onEvent) {
     console.log('');
-    console.log('✓ WApp created successfully');
+    console.log(`✓ ${APP.name} created successfully`);
     console.log(`✓ Name: ${appName}`);
     console.log(`✓ URL: ${validatedUrl}`);
     console.log(`✓ Browser: ${browser}`);

@@ -1,4 +1,5 @@
 import { createApp } from '../core/createApp';
+import { APP } from '../config/app';
 import type { AppEvent } from '../domain/events';
 import type { IAppRegistry } from '../domain/appRegistry';
 import type { BrowserName } from '../domain/types';
@@ -52,7 +53,7 @@ export async function createHandler(
 
     // Final summary output
     console.log('');
-    console.log('✓ WApp created successfully');
+    console.log(`✓ ${APP.name} created successfully`);
     console.log(`✓ Name: ${app.name}`);
     console.log(`✓ URL: ${app.url}`);
     console.log(`✓ Browser: ${app.browser}`);

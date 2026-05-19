@@ -2,6 +2,7 @@ import { IAppRegistry } from '../domain/appRegistry';
 import { AppEntry } from '../domain/types';
 import { AppEvent, OnEvent } from '../domain/events';
 import { deleteFile } from '../services/fileService';
+import { APP } from '../config/app';
 
 export async function removeApp(
   query: string,
@@ -91,7 +92,7 @@ export async function removeApp(
 
   // Fallback console output for backward compatibility
   if (!onEvent) {
-    console.log(`✓ App "${removed.name}" removed`);
+    console.log(`✓ ${APP.name} "${removed.name}" removed`);
     console.log('✓ Shortcut deleted');
     console.log('✓ Icon deleted');
   }

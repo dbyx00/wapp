@@ -1,4 +1,5 @@
 import { listApps } from '../core/listApps';
+import { APP } from '../config/app';
 import type { AppEvent } from '../domain/events';
 import type { AppEntry } from '../domain/types';
 import type { IAppRegistry } from '../domain/appRegistry';
@@ -9,11 +10,11 @@ export async function listHandler(registry: IAppRegistry): Promise<void> {
       const { apps, count } = event.data as { apps: AppEntry[]; count: number };
 
       if (count === 0) {
-        console.log('No WApps installed. Use "wapp create <url>" to create one.');
+        console.log(`No ${APP.namePlural} installed. Use "${APP.slug} create <url>" to create one.`);
         return;
       }
 
-      console.log(`📱 Installed WApps (${count}):`);
+      console.log(`📱 Installed ${APP.namePlural} (${count}):`);
       console.log('');
       apps.forEach((app, index) => {
         const created = new Date(app.createdAt).toLocaleDateString();

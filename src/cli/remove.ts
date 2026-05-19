@@ -1,4 +1,5 @@
 import { removeApp } from '../core/removeApp';
+import { APP } from '../config/app';
 import type { AppEvent } from '../domain/events';
 import type { IAppRegistry } from '../domain/appRegistry';
 
@@ -7,7 +8,7 @@ export async function removeHandler(query: string, registry: IAppRegistry): Prom
     await removeApp(query, registry, (event: AppEvent) => {
       if (event.step === 'removed' && event.status === 'success') {
         const app = event.data as { name: string };
-        console.log(`✓ App "${app.name}" removed`);
+        console.log(`✓ ${APP.name} "${app.name}" removed`);
         console.log('✓ Shortcut deleted');
         console.log('✓ Icon deleted');
       } else if (event.status === 'error') {

@@ -1,6 +1,7 @@
 import { IAppRegistry } from '../domain/appRegistry';
 import { AppEntry } from '../domain/types';
 import { AppEvent, OnEvent } from '../domain/events';
+import { APP } from '../config/app';
 
 export async function listApps(
   registry: IAppRegistry,
@@ -20,9 +21,9 @@ export async function listApps(
   // Fallback console output for backward compatibility
   if (!onEvent) {
     if (apps.length === 0) {
-      console.log('No WApps installed. Use "wapp create <url>" to create one.');
+      console.log(`No ${APP.namePlural} installed. Use "${APP.slug} create <url>" to create one.`);
     } else {
-      console.log(`📱 Installed WApps (${apps.length}):`);
+      console.log(`📱 Installed ${APP.namePlural} (${apps.length}):`);
       console.log('');
       apps.forEach((app, index) => {
         const created = new Date(app.createdAt).toLocaleDateString();

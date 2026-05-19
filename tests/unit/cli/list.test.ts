@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { listHandler } from '../../../src/cli/list';
+import { APP } from '../../../src/config/app';
 import type { IAppRegistry } from '../../../src/domain/appRegistry';
 import type { AppEntry } from '../../../src/domain/types';
 
@@ -45,7 +46,7 @@ describe('listHandler', () => {
 
     await listHandler(registry);
 
-    expect(console.log).toHaveBeenCalledWith('No WApps installed. Use "wapp create <url>" to create one.');
+    expect(console.log).toHaveBeenCalledWith(`No ${APP.namePlural} installed. Use "${APP.slug} create <url>" to create one.`);
   });
 
   it('prints app list when apps exist', async () => {
@@ -71,7 +72,7 @@ describe('listHandler', () => {
 
     await listHandler(registry);
 
-    expect(console.log).toHaveBeenCalledWith('📱 Installed WApps (1):');
+    expect(console.log).toHaveBeenCalledWith(`📱 Installed ${APP.namePlural} (1):`);
     expect(console.log).toHaveBeenCalledWith('  1. ChatGPT');
   });
 

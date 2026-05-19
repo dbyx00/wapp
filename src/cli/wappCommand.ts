@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { AppRegistry } from '../services/appRegistry';
 import { BrowserName } from '../domain/types';
+import { APP } from '../config/app';
 import { createHandler } from './create';
 import { listHandler } from './list';
 import { removeHandler } from './remove';
@@ -10,9 +11,9 @@ import { removeHandler } from './remove';
 const program = new Command();
 
 program
-  .name('wapp')
-  .description('Windows Web App Installer - Convert URLs into installable Windows apps')
-  .version('0.1.0');
+  .name(APP.slug)
+  .description(APP.description)
+  .version(APP.version);
 
 const registry = new AppRegistry();
 
@@ -32,14 +33,14 @@ Examples:
 
 program
   .command('list')
-  .description('List all installed WApps')
+  .description(`List all installed ${APP.namePlural}`)
   .action(async () => {
     await listHandler(registry);
   });
 
 program
   .command('remove <query>')
-  .description('Remove an installed WApp (by name, partial match, or list number)')
+  .description(`Remove an installed ${APP.name} (by name, partial match, or list number)`)
   .addHelpText('after', `
 Examples:
   $ wapp remove "ChatGPT"      # Exact name
@@ -51,7 +52,7 @@ Examples:
 
 program
   .command('web')
-  .description('Start the WApp web UI')
+  .description(`Start the ${APP.name} web UI`)
   .option('--port <port>', 'Port to run the server on', '3000')
   .action(async (options: { port?: string }) => {
     const port = parseInt(options.port || '3000', 10);

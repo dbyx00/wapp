@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { removeHandler } from '../../../src/cli/remove';
+import { APP } from '../../../src/config/app';
 import type { IAppRegistry } from '../../../src/domain/appRegistry';
 import type { AppEntry } from '../../../src/domain/types';
 
@@ -64,7 +65,7 @@ describe('removeHandler', () => {
 
     await removeHandler('ChatGPT', registry);
 
-    expect(console.log).toHaveBeenCalledWith('✓ App "ChatGPT" removed');
+    expect(console.log).toHaveBeenCalledWith(`✓ ${APP.name} "ChatGPT" removed`);
     expect(console.log).toHaveBeenCalledWith('✓ Shortcut deleted');
     expect(console.log).toHaveBeenCalledWith('✓ Icon deleted');
   });
