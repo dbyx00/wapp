@@ -5,7 +5,7 @@ export interface IAppRegistry {
   list(): AppEntry[];
   findByName(name: string): AppEntry | undefined;
   remove(name: string): AppEntry;
+  unregister(name: string): AppEntry;
   search(query: string): AppEntry[];
   getByIndex(index: number): AppEntry | undefined;
-  removeByQuery(query: string): AppEntry;
 }

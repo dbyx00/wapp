@@ -22,14 +22,19 @@ export class AppRegistry implements IAppRegistry {
   }
 
   remove(name: string): AppEntry {
+    const removed = this.unregister(name);
+    deleteFile(removed.shortcutPath);
+    deleteFile(removed.iconPath);
+    return removed;
+  }
+
+  unregister(name: string): AppEntry {
     const data = load();
     const index = data.apps.findIndex(app => app.name === name);
     if (index === -1) {
       throw new Error(`App "${name}" not found`);
     }
     const [removed] = data.apps.splice(index, 1);
-    deleteFile(removed.shortcutPath);
-    deleteFile(removed.iconPath);
     save(data);
     return removed;
   }
@@ -48,29 +53,4 @@ export class AppRegistry implements IAppRegistry {
     return apps[index - 1];
   }
 
-  removeByQuery(query: string): AppEntry {
-    const num = parseInt(query, 10);
-    if (!isNaN(num) && num.toString() === query) {
-      if (num <= 0) {
-        throw new Error(`Invalid app number: ${num}`);
-      }
-      const app = this.getByIndex(num);
-      if (!app) {
-        throw new Error(`No app found at position ${num}`);
-      }
-      return this.remove(app.name);
-    }
-    const matches = this.search(query);
-    if (matches.length === 0) {
-      throw new Error(`No apps match "${query}"`);
-    }
-    if (matches.length === 1) {
-      return this.remove(matches[0].name);
-    }
-    const suggestions = matches.map((app, i) => `  ${i + 1}. ${app.name}`).join('\n');
-    throw new Error(
-      `Multiple apps match "${query}":\n${suggestions}\n\n` +
-      `Use the app number (e.g., wapp remove 1) or a more specific name.`
-    );
-  }
 }

@@ -8,8 +8,10 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:web": "vite build",
     "start": "node dist/cli/wappCommand.js",
     "dev": "ts-node src/cli/wappCommand.ts",
+    "dev:web": "concurrently \"node dist/cli/wappCommand.js web\" \"vite dev\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -24,14 +26,21 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@hono/node-server": "^1.14.0",
     "cheerio": "^1.0.0",
-    "commander": "^12.1.0"
+    "commander": "^12.1.0",
+    "hono": "^4.7.0"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tailwindcss/vite": "^4.3.0",
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^4.1.6",
+    "svelte": "^5.0.0",
+    "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.0",
+    "vite": "^6.0.0",
     "vitest": "^4.1.6"
   }
 }

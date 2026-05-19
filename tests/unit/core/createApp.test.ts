@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createApp } from '../../../src/core/createApp';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
 
 // Mock service dependencies (but NOT AppRegistry anymore)
 vi.mock('../../../src/services/browserResolver', () => ({
@@ -41,9 +41,9 @@ function createMockRegistry(): IAppRegistry {
     list: vi.fn().mockReturnValue([]),
     findByName: vi.fn(),
     remove: vi.fn(),
+    unregister: vi.fn(),
     search: vi.fn().mockReturnValue([]),
     getByIndex: vi.fn(),
-    removeByQuery: vi.fn(),
   };
 }
 

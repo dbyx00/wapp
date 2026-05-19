@@ -1,12 +1,19 @@
-import { IAppRegistry } from '../domain/appRegistry';
+import { removeApp } from '../core/removeApp';
+import type { AppEvent } from '../domain/events';
+import type { IAppRegistry } from '../domain/appRegistry';
 
-export function removeHandler(query: string, registry: IAppRegistry): void {
+export async function removeHandler(query: string, registry: IAppRegistry): Promise<void> {
   try {
-    const app = registry.removeByQuery(query);
-
-    console.log(`✓ App "${app.name}" removed`);
-    console.log('✓ Shortcut deleted');
-    console.log('✓ Icon deleted');
+    await removeApp(query, registry, (event: AppEvent) => {
+      if (event.step === 'removed' && event.status === 'success') {
+        const app = event.data as { name: string };
+        console.log(`✓ App "${app.name}" removed`);
+        console.log('✓ Shortcut deleted');
+        console.log('✓ Icon deleted');
+      } else if (event.status === 'error') {
+        console.error(`✗ ${event.step}: ${event.error}`);
+      }
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`✗ Error: ${message}`);

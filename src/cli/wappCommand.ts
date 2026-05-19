@@ -33,8 +33,8 @@ Examples:
 program
   .command('list')
   .description('List all installed WApps')
-  .action(() => {
-    listHandler(registry);
+  .action(async () => {
+    await listHandler(registry);
   });
 
 program
@@ -45,8 +45,18 @@ Examples:
   $ wapp remove "ChatGPT"      # Exact name
   $ wapp remove chat           # Partial match
   $ wapp remove 2              # By list number (see wapp list)`)
-  .action((query: string) => {
-    removeHandler(query, registry);
+  .action(async (query: string) => {
+    await removeHandler(query, registry);
+  });
+
+program
+  .command('web')
+  .description('Start the WApp web UI')
+  .option('--port <port>', 'Port to run the server on', '3000')
+  .action(async (options: { port?: string }) => {
+    const port = parseInt(options.port || '3000', 10);
+    const { startServer } = await import('../api/server');
+    startServer(port);
   });
 
 program.parse();

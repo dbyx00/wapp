@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createHandler } from '../../../src/cli/create';
-import { IAppRegistry } from '../../../src/domain/appRegistry';
+import type { IAppRegistry } from '../../../src/domain/appRegistry';
 
 // Mock createApp dependencies
 vi.mock('../../../src/core/createApp', () => ({
@@ -16,9 +16,9 @@ function createMockRegistry(): IAppRegistry {
     list: vi.fn().mockReturnValue([]),
     findByName: vi.fn(),
     remove: vi.fn(),
+    unregister: vi.fn(),
     search: vi.fn().mockReturnValue([]),
     getByIndex: vi.fn(),
-    removeByQuery: vi.fn(),
   };
 }
 
@@ -33,25 +33,45 @@ describe('createHandler', () => {
   });
 
   it('calls createApp with correct parameters', async () => {
+    mockCreateApp.mockResolvedValue({
+      name: 'Test',
+      url: 'https://example.com',
+      browser: 'chrome',
+      iconPath: '',
+      shortcutPath: '',
+      createdAt: '',
+    });
     const registry = createMockRegistry();
 
     await createHandler('https://example.com', { name: 'Test', browser: 'chrome' }, registry);
 
-    expect(mockCreateApp).toHaveBeenCalledWith({
-      url: 'https://example.com',
-      name: 'Test',
-      browser: 'chrome',
-      registry,
-    });
+    expect(mockCreateApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://example.com',
+        name: 'Test',
+        browser: 'chrome',
+        registry,
+      }),
+      expect.any(Function)
+    );
   });
 
   it('defaults browser to brave when not specified', async () => {
+    mockCreateApp.mockResolvedValue({
+      name: 'Test',
+      url: 'https://example.com',
+      browser: 'brave',
+      iconPath: '',
+      shortcutPath: '',
+      createdAt: '',
+    });
     const registry = createMockRegistry();
 
     await createHandler('https://example.com', {}, registry);
 
     expect(mockCreateApp).toHaveBeenCalledWith(
-      expect.objectContaining({ browser: 'brave' })
+      expect.objectContaining({ browser: 'brave' }),
+      expect.any(Function)
     );
   });
 
