@@ -2,3 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 .atl/
+
+# Rendered manifest files (templates are source of truth)
+installer/wapp.iss
+msix/AppxManifest.xml

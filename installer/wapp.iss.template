@@ -1,0 +1,36 @@
+#define AppName "{{APP_NAME}}"
+#define AppVersion "{{APP_VERSION}}"
+#define AppSlug "{{APP_SLUG}}"
+#define AppExeName "{{APP_EXE_NAME}}"
+
+[Setup]
+AppName={#AppName}
+AppVersion={#AppVersion}
+AppId={{{#AppSlug}}
+PrivilegesRequired=lowest
+DefaultDirName={localappdata}\Programs\{#AppSlug}
+DisableProgramGroupPage=no
+DefaultGroupName={#AppName}
+OutputDir=dist
+OutputBaseFilename=WApp-Setup-{#AppVersion}
+SetupIconFile=installer\assets\wapp.ico
+UninstallDisplayIcon={app}\{#AppExeName}
+
+[Files]
+Source: "dist\wapp.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\public\*"; DestDir: "{app}\public"; Flags: ignoreversion recursesubdirs
+
+[Icons]
+Name: "{userprograms}\{#AppName}\{#AppName} Manager"; Filename: "{app}\{#AppExeName}"; Parameters: "web"
+Name: "{userdesktop}\{#AppName} Manager"; Filename: "{app}\{#AppExeName}"; Parameters: "web"; Tasks: desktopicon
+Name: "{userstartup}\{#AppName} Manager"; Filename: "{app}\{#AppExeName}"; Parameters: "web"; Tasks: startup
+
+[Tasks]
+Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
+Name: "startup"; Description: "Run at &Windows startup"; GroupDescription: "Additional icons:"
+
+[Run]
+Filename: "{app}\{#AppExeName}"; Parameters: "web"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{app}\public"

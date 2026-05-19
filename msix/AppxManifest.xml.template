@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PLACEHOLDER: Replace Publisher with your Microsoft Store Publisher ID before submitting -->
+<!-- TODO: Replace placeholder icons in msix/assets/ with final branded assets before Store submission -->
+<!-- TODO: Replace Publisher="CN=TODO-REPLACE-WITH-STORE-PUBLISHER-ID" with your Microsoft Partner Center Publisher ID -->
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  <Identity Name="GentlemanProgramming.{{APP_SLUG}}"
+            Publisher="CN=TODO-REPLACE-WITH-STORE-PUBLISHER-ID"
+            Version="{{VERSION}}.0"
+            ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>{{APP_NAME}}</DisplayName>
+    <PublisherDisplayName>Gentleman Programming</PublisherDisplayName>
+    <Logo>assets\StoreLogo.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+  <Applications>
+    <Application Id="{{APP_SLUG}}" Executable="wapp.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="{{APP_NAME}}"
+        Description="Windows Web App Installer - Convert URLs into installable Windows apps"
+        Square150x150Logo="assets\Square150x150Logo.png"
+        Square44x44Logo="assets\Square44x44Logo.png"
+        BackgroundColor="transparent" />
+    </Application>
+  </Applications>
+</Package>
