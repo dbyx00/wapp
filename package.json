@@ -9,6 +9,9 @@
   "scripts": {
     "build": "tsc",
     "build:web": "vite build",
+    "build:bundle": "esbuild src/cli/wappCommand.ts --bundle --platform=node --target=node22 --outfile=dist/bundle.js --format=cjs",
+    "build:exe": "node scripts/build-exe.js",
+    "build:all": "npm run build:web && npm run build:bundle && npm run build:exe",
     "start": "node dist/cli/wappCommand.js",
     "dev": "ts-node src/cli/wappCommand.ts",
     "dev:web": "concurrently \"node dist/cli/wappCommand.js web\" \"vite dev\"",
@@ -36,6 +39,7 @@
     "@tailwindcss/vite": "^4.3.0",
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^4.1.6",
+    "esbuild": "^0.25.12",
     "svelte": "^5.0.0",
     "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
